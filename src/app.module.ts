@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule } from './common.module';
 import { TestController } from './controller/test/test.controller';
+import { AddressService } from './service/address/address.service';
 
 @Module({
   imports: [CommonModule,
