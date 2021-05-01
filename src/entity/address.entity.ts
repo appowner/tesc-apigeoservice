@@ -25,7 +25,13 @@ export class AddressEntity {
     district:string;   
 
     @Column()
-    pincode:string;   
+    pincode:string; 
+    
+    @Column()
+    latitude:string; 
+
+    @Column()
+    longitude:string; 
 
     constructor(){        
        
