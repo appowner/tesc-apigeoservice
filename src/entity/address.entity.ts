@@ -33,6 +33,10 @@ export class AddressEntity {
     @Column()
     longitude:string; 
 
+    @Column()
+    country:string; 
+
+
     constructor(){        
        
     }
