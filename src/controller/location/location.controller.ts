@@ -26,7 +26,7 @@ export class LocationController {
   // // @UseGuards(JwtAuthGuard)
   async findAllState(): Promise<ResponseObject<any>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
-    let ro: ResponseObject<any> = new ResponseObject(be, JSON.stringify(await this.citiesService.findAllState()))
+    let ro: ResponseObject<any> = new ResponseObject(be, await this.citiesService.findAllState())
     return ro;
   }
 
