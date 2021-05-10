@@ -23,6 +23,13 @@ export class AddressService {
     }
 
     async findByIds(ids: number[]): Promise<AddressEntity[]> {
+
+        if(ids == undefined|| ids.length == 0){
+            return new Promise(res => {
+                res([]);
+            });
+        }
+
         let address = await this.addresRepository.findByIds(ids);
 
         if (address.length == 0) {
