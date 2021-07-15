@@ -9,6 +9,13 @@ import { CitiesRepository } from './repository/cities-repository';
 import { CitiesService } from './service/customer/cities.service';
 import { AddressService } from './service/address/address.service';
 import { AddresRepository } from './repository/address.repository';
+import { GeofenceDetailsRepository } from './repository/geofence.details.repository';
+import { GeofenceRepository } from './repository/geofence.repository';
+import { LatlongRepository } from './repository/latlong.repository';
+import { LocationRepository } from './repository/location.repository';
+import { PoiRepository } from './repository/poi.repository';
+import { LocationService } from './service/location/location.service';
+import { LatlongEntity } from './entity/latLong.entity';
 
 
 
@@ -19,9 +26,9 @@ import { AddresRepository } from './repository/address.repository';
             secret: jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
           }), 
-        TypeOrmModule.forFeature([CitiesEntity,CitiesRepository, AddresRepository]),
+        TypeOrmModule.forFeature([CitiesEntity, LatlongEntity,CitiesRepository, AddresRepository, GeofenceRepository, GeofenceDetailsRepository, LatlongRepository, LocationRepository, PoiRepository]),
     ],
     controllers: [LocationController],
-    providers: [CitiesService, AddressService]
+    providers: [CitiesService, AddressService, LocationService]
 })
 export class CommonModule { }

@@ -14,6 +14,85 @@ CREATE TABLE IF NOT EXISTS cities (
 );
 
 
+CREATE SEQUENCE location_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+
+CREATE TABLE IF NOT EXISTS location (
+ 	id bigint NOT NULL DEFAULT nextval('location_sequence'),
+  location_name varchar(500) NOT NULL,
+  state_name varchar(500) NOT NULL,
+  lat_long_id bigint,
+  poi_id bigint,
+  fence_id bigint,  
+  PRIMARY KEY  (id),
+  CONSTRAINT location_fence_id_fk FOREIGN KEY (fence_id) REFERENCES geofence (id),
+  CONSTRAINT location_poi_id_fk FOREIGN KEY (fence_id) REFERENCES poi (id),
+  CONSTRAINT location_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
+);
+
+
+CREATE SEQUENCE latlong_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS latlong (
+ 	id bigint NOT NULL DEFAULT nextval('latlong_sequence'),
+  lat varchar(100) NOT NULL,
+  long varchar(100) NOT NULL,
+  point geography(POINT, 4326),
+  PRIMARY KEY  (id)
+);
+
+INSERT INTO latlong (lat, long, point) values('22.985943', '72.470534', ST_MakePoint(72.470534,22.985943) );
+
+CREATE SEQUENCE poi_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS poi (
+ 	id bigint NOT NULL DEFAULT nextval('poi_sequence'),
+  lat varchar(100) NOT NULL,
+  long varchar(100) NOT NULL,
+  point geography(POINT, 4326),
+  poi_provider varchar(250),
+  display_name varchar(250),
+  source_provider bigint,
+  PRIMARY KEY  (id)
+);
+
+INSERT INTO poi (id, lat, long, point, poi_provider, display_name, source_provider) values('22.985943', '72.470534', ST_MakePoint(72.470534,22.985943), 'poi_provider', 'display_name', 1 );
+
+CREATE SEQUENCE geofence_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS geofence (
+  id bigint NOT NULL DEFAULT nextval('geofence_sequence'),
+  Name varchar(100) NOT NULL,
+  created_by bigint,
+  created_date timestamp default NOW(),
+  updated_by bigint,
+  updated_date timestamp default NOW(),
+  deleted_by bigint,
+  deleted_date timestamp,
+  is_deleted boolean default false,
+  is_active boolean default true,
+  geom geometry(Geometry),
+  PRIMARY KEY  (id)
+);
+
+insert into geofence(name, created_by, updated_by, geon) values('test', ST_GeomFromText('POLYGON((72.470534 22.985943, 72.470534 22.985943 , 72.473120 22.989143, 72.473023 22.985242, 72.470534 22.985943))'));
+insert into geofence(name, geon) values('test', ST_GeomFromText('POLYGON((72.470534 22.985943, 72.470534 22.985943 , 72.473120 22.989143, 72.473023 22.985242, 72.470534 22.985943))'));
+select a.*, b.* from  public.latlong  b left join  public.geofence a on  st_covers(a.geon, b.point);
+
+
+CREATE SEQUENCE geofence_details_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS geofence_details (
+  id bigint NOT NULL DEFAULT nextval('geofence_details_sequence'),
+  geofence_id bigint not null,
+  lat_long_id bigint NOT NULL,
+  
+  PRIMARY KEY  (id),
+  CONSTRAINT geofence_id_fk FOREIGN KEY (geofence_id) REFERENCES geofence (id),
+  CONSTRAINT lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
+);
+
+
 INSERT INTO cities (id, city_name, city_state) VALUES
 (1, 'Kolhapur', 'Maharashtra'),
 (2, 'Port Blair', 'Andaman & Nicobar Islands'),

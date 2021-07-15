@@ -7,12 +7,17 @@ import { CitiesService } from 'src/service/customer/cities.service';
 import { CitiesEntity } from 'src/entity/cities.entity';
 import { AddressEntity } from 'src/entity/address.entity';
 import { AddressService } from 'src/service/address/address.service';
+import { query, Request } from 'express';
+import { LocationEntity } from 'src/entity/location.entity';
+import { LocationService } from 'src/service/location/location.service';
+import { GeofenceEntity } from 'src/entity/geofence.entity';
+import { PoiEntity } from 'src/entity/poi.entity';
 
 @Controller('location')
 @UseFilters(new CustomGLobalExceptionHandler())
 export class LocationController {
 
-  constructor(private citiesService: CitiesService, private addressService: AddressService) { }
+  constructor(private citiesService: CitiesService, private addressService: AddressService, private locationService : LocationService) { }
 
   @Get("/all")
   // // @UseGuards(JwtAuthGuard)
@@ -61,6 +66,60 @@ export class LocationController {
   async createAddress(@Body() addressEntity: AddressEntity): Promise<ResponseObject<AddressEntity>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
     let ro: ResponseObject<AddressEntity> = new ResponseObject(be, await this.addressService.create(addressEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/createLocation")
+  // // @UseGuards(JwtAuthGuard)
+  async createLocation(@Req() req: Request,  @Body() locationEntity: LocationEntity): Promise<ResponseObject<LocationEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<LocationEntity> = new ResponseObject(be, await this.locationService.createLocation(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/udpateLocation")
+  // // @UseGuards(JwtAuthGuard)
+  async udpateLocation(@Req() req: Request,  @Body() locationEntity: LocationEntity): Promise<ResponseObject<LocationEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<LocationEntity> = new ResponseObject(be, await this.locationService.updateLocation(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/createGeofence")
+  // // @UseGuards(JwtAuthGuard)
+  async createGeofence(@Req() req: Request,  @Body() geofenceEntity: GeofenceEntity): Promise<ResponseObject<GeofenceEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeofenceEntity> = new ResponseObject(be, await this.locationService.createGeofence(req, geofenceEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/udpateGeofence")
+  // // @UseGuards(JwtAuthGuard)
+  async udpateGeofence(@Req() req: Request,  @Body() geofenceEntity: GeofenceEntity): Promise<ResponseObject<GeofenceEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeofenceEntity> = new ResponseObject(be, await this.locationService.updateGeofence(req, geofenceEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/createPoi")
+  // // @UseGuards(JwtAuthGuard)
+  async createPoi(@Req() req: Request,  @Body() poiEntity: PoiEntity): Promise<ResponseObject<PoiEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<PoiEntity> = new ResponseObject(be, await this.locationService.createPoi(req, poiEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/udpatePoi")
+  // // @UseGuards(JwtAuthGuard)
+  async udpatePoi(@Req() req: Request,  @Body() poiEntity: PoiEntity): Promise<ResponseObject<PoiEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<PoiEntity> = new ResponseObject(be, await this.locationService.updatePoi(req, poiEntity));
     console.log(JSON.stringify(ro));
     return ro;
   }
