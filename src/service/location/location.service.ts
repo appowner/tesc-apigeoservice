@@ -10,6 +10,15 @@ import { LatlongRepository } from 'src/repository/latlong.repository';
 import { LocationRepository } from 'src/repository/location.repository';
 import { PoiRepository } from 'src/repository/poi.repository';
 import { query, Request } from 'express';
+import { RoadLocationCacheEntity } from 'src/entity/road.location.cache.entity';
+import { GeoLocationCacheEntity } from 'src/entity/geo.location.cache.entity';
+import { RoadLocationCacheRepository } from 'src/repository/road.location.cache.repositoty';
+import { GeoLocationCacheRepository } from 'src/repository/geo.location.cache.repository';
+import { GeoLatLongRawEntity } from 'src/entity/geo.lat.long.raw.entity';
+import { GeoLatLongRawRepository } from 'src/repository/geo.lat.long.raw.repository';
+import { GeoLatLongRepository } from 'src/repository/geo.lat.long.repository';
+import { GeoTrackingObjectEntity } from 'src/entity/geo.tracking.object.entity';
+import { GeoTrackingObjectRepository } from 'src/repository/geo.tracking.object.repository';
 
 @Injectable()
 export class LocationService {
@@ -18,7 +27,12 @@ export class LocationService {
         private readonly latlongRepository: LatlongRepository,
         private readonly geofenceRepository: GeofenceRepository,
         private readonly geofenceDetailsRepository: GeofenceDetailsRepository,
-        private readonly poiRepository: PoiRepository,) {
+        private readonly poiRepository: PoiRepository,
+        private readonly roadLocationCacheRepository : RoadLocationCacheRepository,
+        private readonly geoLocationCacheRepository : GeoLocationCacheRepository,
+        private readonly geoLatLongRawRepository : GeoLatLongRawRepository,
+        private readonly geoLatLongRepository: GeoLatLongRepository,
+        private readonly geoTrackingObjectRepository : GeoTrackingObjectRepository) {
 
     }
 
@@ -221,6 +235,141 @@ export class LocationService {
     }
 
 
+    public async createRoadLocationCache(req: Request, roadLocationCacheEntity: RoadLocationCacheEntity): Promise<RoadLocationCacheEntity> {
+        let latLong: LatlongEntity;
+       
+        if (roadLocationCacheEntity.fromLatLong && !roadLocationCacheEntity.fromLatLong.id) {
+            latLong = await this.createLatlong(req, roadLocationCacheEntity.fromLatLong);
+            roadLocationCacheEntity.fromLatLongId = latLong.id;
+            roadLocationCacheEntity.fromLatLong = latLong;
+        }
 
+        if (roadLocationCacheEntity.toLatLong && !roadLocationCacheEntity.toLatLong.id) {
+            latLong = await this.createLatlong(req, roadLocationCacheEntity.toLatLong);
+            roadLocationCacheEntity.toLatLongId = latLong.id;
+            roadLocationCacheEntity.toLatLong = latLong;
+        }       
+
+        return this.roadLocationCacheRepository.save(roadLocationCacheEntity);;
+    }
+
+    public async updateRoadLocationCache(req: Request, roadLocation: RoadLocationCacheEntity): Promise<RoadLocationCacheEntity> {
+        let latLong: LatlongEntity;
+        
+        if (roadLocation.fromLatLong && roadLocation.fromLatLongId) {
+            roadLocation.fromLatLong.id = roadLocation.fromLatLongId;
+            latLong = await this.updateLatlong(req, roadLocation.fromLatLong);
+            roadLocation.fromLatLongId = latLong.id;
+            roadLocation.fromLatLong = latLong;
+        }
+
+        if (roadLocation.toLatLong && roadLocation.toLatLongId) {
+            roadLocation.toLatLong.id = roadLocation.toLatLongId;
+            latLong = await this.updateLatlong(req, roadLocation.toLatLong);
+            roadLocation.toLatLongId = latLong.id;
+            roadLocation.toLatLong = latLong;
+        }
+
+        return this.roadLocationCacheRepository.save(roadLocation);;
+    }
+
+    public async getRoadLocationCacheById(req: Request, id: number): Promise<RoadLocationCacheEntity> {
+
+        let location: RoadLocationCacheEntity = await this.roadLocationCacheRepository.findOne(id);
+
+        location.fromLatLong = await this.latlongRepository.findOne(location.fromLatLongId);
+        location.toLatLong = await this.latlongRepository.findOne(location.toLatLongId);
+
+        return location;
+    }
+
+    public async findRoadLocationCacheByText(req: Request, text: string): Promise<RoadLocationCacheEntity[]> {
+
+        let query = `lower(text) = '%lower(${text})%'`;
+        let locations: RoadLocationCacheEntity[] = await this.roadLocationCacheRepository.find({where : query});
+
+        for (let index = 0; index < locations.length; index++) {
+            const location = locations[index];        
+            location.fromLatLong = await this.latlongRepository.findOne(location.fromLatLongId);
+            location.toLatLong = await this.latlongRepository.findOne(location.toLatLongId);
+        }
+
+        return locations;
+    }
+
+    public async createGeoLocationCache(req: Request, geoLocationCacheEntity: GeoLocationCacheEntity): Promise<GeoLocationCacheEntity> {
+        let latLong: LatlongEntity;
+       
+        if (geoLocationCacheEntity.latLong && !geoLocationCacheEntity.latLong.id) {
+            latLong = await this.createLatlong(req, geoLocationCacheEntity.latLong);
+            geoLocationCacheEntity.latLongId = latLong.id;
+            geoLocationCacheEntity.latLong = latLong;
+        }         
+
+        return this.geoLocationCacheRepository.save(geoLocationCacheEntity);;
+    }
+
+    public async updateGeoLocationCache(req: Request, roadLocation: GeoLocationCacheEntity): Promise<GeoLocationCacheEntity> {
+        let latLong: LatlongEntity;
+        
+        if (roadLocation.latLong && roadLocation.latLongId) {
+            roadLocation.latLong.id = roadLocation.latLongId;
+            latLong = await this.updateLatlong(req, roadLocation.latLong);
+            roadLocation.latLongId = latLong.id;
+            roadLocation.latLong = latLong;
+        }      
+
+        return this.geoLocationCacheRepository.save(roadLocation);;
+    }
+
+    public async getGeoLocationCacheById(req: Request, id: number): Promise<GeoLocationCacheEntity> {
+
+        let location: GeoLocationCacheEntity = await this.geoLocationCacheRepository.findOne(id);
+
+        location.latLong = await this.latlongRepository.findOne(location.latLongId);        
+
+        return location;
+    }
+
+    public async findGeoLocationCacheByText(req: Request, text: string): Promise<GeoLocationCacheEntity[]> {
+
+        let query = `lower(address_text) = '%lower(${text})%'`;
+        let locations: GeoLocationCacheEntity[] = await this.geoLocationCacheRepository.find({where : query});
+
+        for (let index = 0; index < locations.length; index++) {
+            const location = locations[index];        
+            location.latLong = await this.latlongRepository.findOne(location.latLongId);            
+        }
+
+        return locations;
+    }
+
+    public async addGeoLatLongRaw(req : Request, data : string): Promise<any>{
+        let raw = new GeoLatLongRawEntity();
+        raw.latLongRecord = data;
+        raw.isProcessed = false;
+        await this.geoLatLongRawRepository.save(raw);
+        return "sucess";
+    }
+
+    public async createGeoTrackingObject(req : Request, geoTrackingObjectEntity : GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity>{
+        return this.geoTrackingObjectRepository.save(geoTrackingObjectEntity);
+    }
+
+    public async updateGeoTrackingObject(req : Request, geoTrackingObjectEntity : GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity>{
+        return this.geoTrackingObjectRepository.save(geoTrackingObjectEntity);
+    }
+
+    public async allGeoTrackingObject(req:Request) : Promise<GeoTrackingObjectEntity[]>{
+        return this.geoTrackingObjectRepository.find();
+    }
+
+    public async getGeoTrackingObjectById(req:Request, id : number) : Promise<GeoTrackingObjectEntity>{
+        return this.geoTrackingObjectRepository.findOne(id);
+    }
+
+    public async getGeoLatLongById(req : Request, id : number){
+        return this.geoLatLongRepository.findOne(id);
+    }
 
 }

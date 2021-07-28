@@ -12,6 +12,10 @@ import { LocationEntity } from 'src/entity/location.entity';
 import { LocationService } from 'src/service/location/location.service';
 import { GeofenceEntity } from 'src/entity/geofence.entity';
 import { PoiEntity } from 'src/entity/poi.entity';
+import { RoadLocationCacheRepository } from 'src/repository/road.location.cache.repositoty';
+import { RoadLocationCacheEntity } from 'src/entity/road.location.cache.entity';
+import { GeoLocationCacheEntity } from 'src/entity/geo.location.cache.entity';
+import { GeoTrackingObjectEntity } from 'src/entity/geo.tracking.object.entity';
 
 @Controller('location')
 @UseFilters(new CustomGLobalExceptionHandler())
@@ -130,6 +134,119 @@ export class LocationController {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
     let ro: ResponseObject<AddressEntity> = new ResponseObject(be, await this.addressService.update(addressEntity));
     console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Get("/getRoadLocationCacheById")
+  // // @UseGuards(JwtAuthGuard)
+  async getRoadLocationCacheById(@Query('id') id: number, @Req() req: Request,): Promise<ResponseObject<RoadLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<RoadLocationCacheEntity> = new ResponseObject(be, await this.locationService.getRoadLocationCacheById(req, id));
+    return ro;
+  }
+
+  @Get("/findRoadLocationCacheByText")
+  // // @UseGuards(JwtAuthGuard)
+  async findRoadLocationCacheByText(@Query('text') text: string, @Req() req: Request,): Promise<ResponseObject<RoadLocationCacheEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<RoadLocationCacheEntity[]> = new ResponseObject(be, await this.locationService.findRoadLocationCacheByText(req, text));
+    return ro;
+  }
+
+
+  @Post("/createRoadLocationCache")
+  // // @UseGuards(JwtAuthGuard)
+  async createRoadLocationCache(@Req() req: Request,  @Body() locationEntity: RoadLocationCacheEntity): Promise<ResponseObject<RoadLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<RoadLocationCacheEntity> = new ResponseObject(be, await this.locationService.createRoadLocationCache(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/udpateRoadLocationCache")
+  // // @UseGuards(JwtAuthGuard)
+  async udpateRoadLocationCache(@Req() req: Request,  @Body() locationEntity: RoadLocationCacheEntity): Promise<ResponseObject<RoadLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<RoadLocationCacheEntity> = new ResponseObject(be, await this.locationService.updateRoadLocationCache(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Get("/getGeoLocationCacheById")
+  // // @UseGuards(JwtAuthGuard)
+  async getGeoLocationCacheById(@Query('id') id: number, @Req() req: Request,): Promise<ResponseObject<GeoLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoLocationCacheEntity> = new ResponseObject(be, await this.locationService.getGeoLocationCacheById(req, id));
+    return ro;
+  }
+
+  @Get("/findGeoLocationCacheByText")
+  // // @UseGuards(JwtAuthGuard)
+  async findGeoLocationCacheByText(@Query('text') text: string, @Req() req: Request,): Promise<ResponseObject<GeoLocationCacheEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoLocationCacheEntity[]> = new ResponseObject(be, await this.locationService.findGeoLocationCacheByText(req, text));
+    return ro;
+  }
+
+
+  @Post("/createGeoLocationCache")
+  // // @UseGuards(JwtAuthGuard)
+  async createGeoLocationCache(@Req() req: Request,  @Body() locationEntity: GeoLocationCacheEntity): Promise<ResponseObject<GeoLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoLocationCacheEntity> = new ResponseObject(be, await this.locationService.createGeoLocationCache(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/updateGeoLocationCache")
+  // // @UseGuards(JwtAuthGuard)
+  async updateGeoLocationCache(@Req() req: Request,  @Body() locationEntity: GeoLocationCacheEntity): Promise<ResponseObject<GeoLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoLocationCacheEntity> = new ResponseObject(be, await this.locationService.updateGeoLocationCache(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/addGeoLatLongRaw")
+  // // @UseGuards(JwtAuthGuard)
+  async addGeoLatLongRaw(@Req() req: Request,  @Body() data: any): Promise<ResponseObject<any>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<any> = new ResponseObject(be, await this.locationService.addGeoLatLongRaw(req, data));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/createGeoTrackingObject")
+  // // @UseGuards(JwtAuthGuard)
+  async createGeoTrackingObject(@Req() req: Request,  @Body() locationEntity: GeoTrackingObjectEntity): Promise<ResponseObject<GeoTrackingObjectEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoTrackingObjectEntity> = new ResponseObject(be, await this.locationService.createGeoTrackingObject(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/updateGeoTrackingObject")
+  // // @UseGuards(JwtAuthGuard)
+  async updateGeoTrackingObject(@Req() req: Request,  @Body() locationEntity: GeoTrackingObjectEntity): Promise<ResponseObject<GeoTrackingObjectEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoTrackingObjectEntity> = new ResponseObject(be, await this.locationService.updateGeoTrackingObject(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Get("/findAllGeoTrackingObject")
+  // // @UseGuards(JwtAuthGuard)
+  async allGeoTrackingObject( @Req() req: Request,): Promise<ResponseObject<GeoTrackingObjectEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoTrackingObjectEntity[]> = new ResponseObject(be, await this.locationService.allGeoTrackingObject(req));
+    return ro;
+  }
+
+  @Get("/findAllGeoTrackingObject")
+  // // @UseGuards(JwtAuthGuard)
+  async findGeoTrackingObjectById(@Query('id') id: number, @Req() req: Request,): Promise<ResponseObject<GeoTrackingObjectEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoTrackingObjectEntity> = new ResponseObject(be, await this.locationService.getGeoTrackingObjectById(req, id));
     return ro;
   }
 

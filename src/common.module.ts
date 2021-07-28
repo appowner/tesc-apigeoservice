@@ -16,6 +16,13 @@ import { LocationRepository } from './repository/location.repository';
 import { PoiRepository } from './repository/poi.repository';
 import { LocationService } from './service/location/location.service';
 import { LatlongEntity } from './entity/latLong.entity';
+import { RoadLocationCacheEntity } from './entity/road.location.cache.entity';
+import { GeoLocationCacheEntity } from './entity/geo.location.cache.entity';
+import { RoadLocationCacheRepository } from './repository/road.location.cache.repositoty';
+import { GeoLocationCacheRepository } from './repository/geo.location.cache.repository';
+import { GeoLatLongRawRepository } from './repository/geo.lat.long.raw.repository';
+import { GeoLatLongRepository } from './repository/geo.lat.long.repository';
+import { GeoTrackingObjectRepository } from './repository/geo.tracking.object.repository';
 
 
 
@@ -26,7 +33,10 @@ import { LatlongEntity } from './entity/latLong.entity';
             secret: jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
           }), 
-        TypeOrmModule.forFeature([CitiesEntity, LatlongEntity,CitiesRepository, AddresRepository, GeofenceRepository, GeofenceDetailsRepository, LatlongRepository, LocationRepository, PoiRepository]),
+        TypeOrmModule.forFeature([CitiesEntity, LatlongEntity,CitiesRepository, AddresRepository, GeofenceRepository, 
+            GeofenceDetailsRepository, LatlongRepository, LocationRepository, PoiRepository,
+            RoadLocationCacheRepository, GeoLocationCacheRepository, GeoLatLongRawRepository, GeoLatLongRepository, 
+            GeoTrackingObjectRepository]),
     ],
     controllers: [LocationController],
     providers: [CitiesService, AddressService, LocationService]

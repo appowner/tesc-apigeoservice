@@ -13,6 +13,17 @@ CREATE TABLE IF NOT EXISTS cities (
   PRIMARY KEY  (id)
 );
 
+CREATE EXTENSION postgis;
+
+CREATE SEQUENCE latlong_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS latlong (
+ 	id bigint NOT NULL DEFAULT nextval('latlong_sequence'),
+  lat varchar(100) NOT NULL,
+  long varchar(100) NOT NULL,
+  point geography(POINT, 4326),
+  PRIMARY KEY  (id)
+);
 
 CREATE SEQUENCE location_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
@@ -31,15 +42,7 @@ CREATE TABLE IF NOT EXISTS location (
 );
 
 
-CREATE SEQUENCE latlong_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
-CREATE TABLE IF NOT EXISTS latlong (
- 	id bigint NOT NULL DEFAULT nextval('latlong_sequence'),
-  lat varchar(100) NOT NULL,
-  long varchar(100) NOT NULL,
-  point geography(POINT, 4326),
-  PRIMARY KEY  (id)
-);
 
 INSERT INTO latlong (lat, long, point) values('22.985943', '72.470534', ST_MakePoint(72.470534,22.985943) );
 
@@ -92,6 +95,67 @@ CREATE TABLE IF NOT EXISTS geofence_details (
   CONSTRAINT lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
 );
 
+CREATE SEQUENCE road_location_cache_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS road_location_cache (
+ 	id bigint NOT NULL DEFAULT nextval('road_location_cache_sequence'),
+  text varchar(500) NOT NULL,  
+  from_lat_long_id bigint,
+  to_lat_long_id bigint,
+  distane bigint,
+  created_date timestamp default now(),
+  updated_date timestamp default now(),
+  PRIMARY KEY  (id),  
+  CONSTRAINT road_location_cache_from_lat_long_id_fk FOREIGN KEY (from_lat_long_id) REFERENCES latlong (id),
+  CONSTRAINT road_location_cache_to_lat_long_id_fk FOREIGN KEY (to_lat_long_id) REFERENCES latlong (id)
+);
+
+CREATE SEQUENCE geo_location_cache_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS geo_location_cache (
+ 	id bigint NOT NULL DEFAULT nextval('geo_location_cache_sequence'),
+  address_text varchar(500) NOT NULL,  
+  lat_long_id bigint,  
+  created_date timestamp default now(),
+  updated_date timestamp default now(),
+  PRIMARY KEY  (id),  
+  CONSTRAINT road_location_cache_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)  
+);
+
+CREATE SEQUENCE geo_latlong_raw_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS geo_latlong_raw (
+ 	id bigint NOT NULL DEFAULT nextval('geo_latlong_raw_sequence'),
+  lat_long_record varchar(4000) NOT NULL,  
+  is_valid boolean,
+  is_processed boolean default false,
+  created_date timestamp default now(),  
+  PRIMARY KEY  (id)
+);
+
+CREATE SEQUENCE geo_tracking_object_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS geo_tracking_object (
+ 	id bigint NOT NULL DEFAULT nextval('geo_tracking_object_sequence'),
+  object_type varchar(150) NOT NULL,  
+  object_name varchar(500) NOT NULL,  
+  object_value varchar(500) NOT NULL,  
+  PRIMARY KEY  (id)
+);
+
+
+CREATE SEQUENCE geo_latlong_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS geo_latlong (
+ 	id bigint NOT NULL DEFAULT nextval('geo_latlong_sequence'),
+  geo_tracking_object_id bigint,
+  lat varchar(100) NOT NULL,
+  long varchar(100) NOT NULL,
+  point geography(POINT, 4326),
+  created_date timestamp default now(),
+  recorded_date timestamp ,
+  PRIMARY KEY  (id)
+);
 
 INSERT INTO cities (id, city_name, city_state) VALUES
 (1, 'Kolhapur', 'Maharashtra'),
