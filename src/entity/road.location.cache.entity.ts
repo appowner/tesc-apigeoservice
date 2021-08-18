@@ -9,9 +9,9 @@ export class RoadLocationCacheEntity {
     @ApiProperty()
     @PrimaryGeneratedColumn()
     id:number;
-
-    @Column({name: "text"})
-    text:string;          
+    
+    @Column({name: "distance"})
+    distance:number;          
 
     @Column({name: "from_lat_long_id"})
     fromLatLongId:number;   

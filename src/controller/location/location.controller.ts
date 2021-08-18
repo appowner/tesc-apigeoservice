@@ -145,6 +145,14 @@ export class LocationController {
     return ro;
   }
 
+  @Get("/findRoadDistance")
+  // // @UseGuards(JwtAuthGuard)
+  async findRoadDistance(@Body() body: any, @Req() req: Request,): Promise<ResponseObject<RoadLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<RoadLocationCacheEntity> = new ResponseObject(be, await this.locationService.findRoadDistance(req, body));
+    return ro;
+  }
+
   @Get("/findRoadLocationCacheByText")
   // // @UseGuards(JwtAuthGuard)
   async findRoadLocationCacheByText(@Query('text') text: string, @Req() req: Request,): Promise<ResponseObject<RoadLocationCacheEntity[]>> {
@@ -179,6 +187,14 @@ export class LocationController {
     let ro: ResponseObject<GeoLocationCacheEntity> = new ResponseObject(be, await this.locationService.getGeoLocationCacheById(req, id));
     return ro;
   }
+  @Get("/findGeoLocationByLatLong")
+  // // @UseGuards(JwtAuthGuard)
+  async findGeoLocationByLatLong(@Body() body: any, @Req() req: Request,): Promise<ResponseObject<GeoLocationCacheEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeoLocationCacheEntity> = new ResponseObject(be, await this.locationService.findGeoLocationByLatLong(req, body));
+    return ro;
+  }
+
 
   @Get("/findGeoLocationCacheByText")
   // // @UseGuards(JwtAuthGuard)

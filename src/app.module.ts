@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,6 +8,7 @@ import { CommonModule } from './common.module';
 import { TestController } from './controller/test/test.controller';
 import { AddressService } from './service/address/address.service';
 import { LocationService } from './service/location/location.service';
+import { RestCallService } from './service/rest-call/rest-call.service';
 
 @Module({
   imports: [CommonModule,
@@ -31,6 +33,8 @@ import { LocationService } from './service/location/location.service';
         ],
       })
     }),
+    ScheduleModule.forRoot(),
+    HttpModule
   ],
   controllers: [AppController, TestController],
   providers: [AppService],

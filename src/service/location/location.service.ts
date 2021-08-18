@@ -19,23 +19,36 @@ import { GeoLatLongRawRepository } from 'src/repository/geo.lat.long.raw.reposit
 import { GeoLatLongRepository } from 'src/repository/geo.lat.long.repository';
 import { GeoTrackingObjectEntity } from 'src/entity/geo.tracking.object.entity';
 import { GeoTrackingObjectRepository } from 'src/repository/geo.tracking.object.repository';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { GeoLatLongEntity } from 'src/entity/geo.lat.long.entity';
+import { RestCallService } from '../rest-call/rest-call.service';
 
 @Injectable()
 export class LocationService {
+
+
+    getLatLongRunning = false;
 
     constructor(private readonly locationRepository: LocationRepository,
         private readonly latlongRepository: LatlongRepository,
         private readonly geofenceRepository: GeofenceRepository,
         private readonly geofenceDetailsRepository: GeofenceDetailsRepository,
         private readonly poiRepository: PoiRepository,
-        private readonly roadLocationCacheRepository : RoadLocationCacheRepository,
-        private readonly geoLocationCacheRepository : GeoLocationCacheRepository,
-        private readonly geoLatLongRawRepository : GeoLatLongRawRepository,
+        private readonly roadLocationCacheRepository: RoadLocationCacheRepository,
+        private readonly geoLocationCacheRepository: GeoLocationCacheRepository,
+        private readonly geoLatLongRawRepository: GeoLatLongRawRepository,
         private readonly geoLatLongRepository: GeoLatLongRepository,
-        private readonly geoTrackingObjectRepository : GeoTrackingObjectRepository) {
+        private readonly geoTrackingObjectRepository: GeoTrackingObjectRepository,
+        private readonly restCallService: RestCallService) {
 
+
+        this.test()
     }
 
+    public async test() {
+        // console.log(await this.findGeoLocationByLatLong(null, {lat : "23.340382" , long : "73.302341"}));
+        // console.log(await this.findRoadDistance(null, { fromLat: "23.340382", fromLong: "73.302341", toLat: "23.348057", toLong: "73.206115" }));
+    }
 
     public async createLocation(req: Request, locationEntity: LocationEntity): Promise<LocationEntity> {
         let latLong: LatlongEntity;
@@ -212,8 +225,8 @@ export class LocationService {
         return this.latlongRepository.findOne(latlongEntity.id);
     }
 
-    public async getPoi(req: Request, id : number): Promise<PoiEntity> {
-        let poiEntity: PoiEntity = await this.poiRepository.findOne(id);        
+    public async getPoi(req: Request, id: number): Promise<PoiEntity> {
+        let poiEntity: PoiEntity = await this.poiRepository.findOne(id);
 
         return poiEntity;
     }
@@ -237,7 +250,7 @@ export class LocationService {
 
     public async createRoadLocationCache(req: Request, roadLocationCacheEntity: RoadLocationCacheEntity): Promise<RoadLocationCacheEntity> {
         let latLong: LatlongEntity;
-       
+
         if (roadLocationCacheEntity.fromLatLong && !roadLocationCacheEntity.fromLatLong.id) {
             latLong = await this.createLatlong(req, roadLocationCacheEntity.fromLatLong);
             roadLocationCacheEntity.fromLatLongId = latLong.id;
@@ -248,14 +261,14 @@ export class LocationService {
             latLong = await this.createLatlong(req, roadLocationCacheEntity.toLatLong);
             roadLocationCacheEntity.toLatLongId = latLong.id;
             roadLocationCacheEntity.toLatLong = latLong;
-        }       
+        }
 
         return this.roadLocationCacheRepository.save(roadLocationCacheEntity);;
     }
 
     public async updateRoadLocationCache(req: Request, roadLocation: RoadLocationCacheEntity): Promise<RoadLocationCacheEntity> {
         let latLong: LatlongEntity;
-        
+
         if (roadLocation.fromLatLong && roadLocation.fromLatLongId) {
             roadLocation.fromLatLong.id = roadLocation.fromLatLongId;
             latLong = await this.updateLatlong(req, roadLocation.fromLatLong);
@@ -273,6 +286,41 @@ export class LocationService {
         return this.roadLocationCacheRepository.save(roadLocation);;
     }
 
+    public async findRoadDistance(req: Request, body: any): Promise<RoadLocationCacheEntity> {
+
+        let query = `SELECT a.id FROM   latlong  f join  road_location_cache a on a.from_lat_long_id = f.id 
+                        join latlong t on t.id = a.to_lat_long_id 
+                        where ST_DWithin(f.point, ST_GeomFromText('POINT(${body.fromLong} ${body.fromLat})'), 200)
+                        and ST_DWithin(t.point, ST_GeomFromText('POINT(${body.toLong} ${body.toLat})'), 200);`;
+
+        let res = await this.roadLocationCacheRepository.query(query);
+
+        if (res.length > 0 && res[0].id != null ) {
+            return this.getRoadLocationCacheById(req, res[0].id)
+        } else {
+            let location: RoadLocationCacheEntity = new RoadLocationCacheEntity();
+
+            location.fromLatLong = new LatlongEntity();
+            location.fromLatLong.lat = body.fromLat;
+            location.fromLatLong.long = body.fromLong;
+
+            location.toLatLong = new LatlongEntity();
+            location.toLatLong.lat = body.toLat;
+            location.toLatLong.long = body.toLong;
+
+            let res = await this.restCallService.mapMyIndiaDistanceApi(body.fromLat, body.fromLong, body.toLat, body.toLong)
+
+            if (res && res.distances && res.distances.length > 0 && res.distances[0].length > 0) {
+                location.distance = res.distances[0][0];
+            } else {
+                // postgres function to find disance
+            }
+            return this.createRoadLocationCache(req, location);
+        }
+
+
+    }
+
     public async getRoadLocationCacheById(req: Request, id: number): Promise<RoadLocationCacheEntity> {
 
         let location: RoadLocationCacheEntity = await this.roadLocationCacheRepository.findOne(id);
@@ -286,10 +334,10 @@ export class LocationService {
     public async findRoadLocationCacheByText(req: Request, text: string): Promise<RoadLocationCacheEntity[]> {
 
         let query = `lower(text) = '%lower(${text})%'`;
-        let locations: RoadLocationCacheEntity[] = await this.roadLocationCacheRepository.find({where : query});
+        let locations: RoadLocationCacheEntity[] = await this.roadLocationCacheRepository.find({ where: query });
 
         for (let index = 0; index < locations.length; index++) {
-            const location = locations[index];        
+            const location = locations[index];
             location.fromLatLong = await this.latlongRepository.findOne(location.fromLatLongId);
             location.toLatLong = await this.latlongRepository.findOne(location.toLatLongId);
         }
@@ -299,34 +347,57 @@ export class LocationService {
 
     public async createGeoLocationCache(req: Request, geoLocationCacheEntity: GeoLocationCacheEntity): Promise<GeoLocationCacheEntity> {
         let latLong: LatlongEntity;
-       
+
         if (geoLocationCacheEntity.latLong && !geoLocationCacheEntity.latLong.id) {
             latLong = await this.createLatlong(req, geoLocationCacheEntity.latLong);
             geoLocationCacheEntity.latLongId = latLong.id;
             geoLocationCacheEntity.latLong = latLong;
-        }         
+        }
 
         return this.geoLocationCacheRepository.save(geoLocationCacheEntity);;
     }
 
     public async updateGeoLocationCache(req: Request, roadLocation: GeoLocationCacheEntity): Promise<GeoLocationCacheEntity> {
         let latLong: LatlongEntity;
-        
+
         if (roadLocation.latLong && roadLocation.latLongId) {
             roadLocation.latLong.id = roadLocation.latLongId;
             latLong = await this.updateLatlong(req, roadLocation.latLong);
             roadLocation.latLongId = latLong.id;
             roadLocation.latLong = latLong;
-        }      
+        }
 
         return this.geoLocationCacheRepository.save(roadLocation);;
+    }
+
+    public async findGeoLocationByLatLong(req: Request, body: any): Promise<GeoLocationCacheEntity> {
+
+
+        let query = `SELECT a.id FROM   latlong  b join  geo_location_cache a on a.lat_long_id = b.id where 
+            ST_DWithin(b.point, ST_GeomFromText('POINT(${body.long} ${body.lat})'), 100) 
+                order by ST_Distance(b.point ,ST_GeomFromText('POINT(${body.long} ${body.lat})'));`;
+
+        let res = await this.geoLocationCacheRepository.query(query);
+
+        if (res.length > 0 && res[0].id != null ) {
+            return await this.getGeoLocationCacheById(req, res[0].id);
+        } else {
+            let temp = await this.restCallService.mapMyIndiaReverseGeoCoding(body.lat, body.long);
+            let location: GeoLocationCacheEntity = new GeoLocationCacheEntity();
+            location.addressText = temp[0].formatted_address;
+            location.latLong = new LatlongEntity();
+            location.latLong.lat = body.lat;
+            location.latLong.long = body.long;
+            return await this.createGeoLocationCache(req, location);;
+        }
+
     }
 
     public async getGeoLocationCacheById(req: Request, id: number): Promise<GeoLocationCacheEntity> {
 
         let location: GeoLocationCacheEntity = await this.geoLocationCacheRepository.findOne(id);
 
-        location.latLong = await this.latlongRepository.findOne(location.latLongId);        
+        location.latLong = await this.latlongRepository.findOne(location.latLongId);
 
         return location;
     }
@@ -334,17 +405,17 @@ export class LocationService {
     public async findGeoLocationCacheByText(req: Request, text: string): Promise<GeoLocationCacheEntity[]> {
 
         let query = `lower(address_text) = '%lower(${text})%'`;
-        let locations: GeoLocationCacheEntity[] = await this.geoLocationCacheRepository.find({where : query});
+        let locations: GeoLocationCacheEntity[] = await this.geoLocationCacheRepository.find({ where: query });
 
         for (let index = 0; index < locations.length; index++) {
-            const location = locations[index];        
-            location.latLong = await this.latlongRepository.findOne(location.latLongId);            
+            const location = locations[index];
+            location.latLong = await this.latlongRepository.findOne(location.latLongId);
         }
 
         return locations;
     }
 
-    public async addGeoLatLongRaw(req : Request, data : string): Promise<any>{
+    public async addGeoLatLongRaw(req: Request, data: string): Promise<any> {
         let raw = new GeoLatLongRawEntity();
         raw.latLongRecord = data;
         raw.isProcessed = false;
@@ -352,24 +423,59 @@ export class LocationService {
         return "sucess";
     }
 
-    public async createGeoTrackingObject(req : Request, geoTrackingObjectEntity : GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity>{
+    public async createGeoTrackingObject(req: Request, geoTrackingObjectEntity: GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity> {
         return this.geoTrackingObjectRepository.save(geoTrackingObjectEntity);
     }
 
-    public async updateGeoTrackingObject(req : Request, geoTrackingObjectEntity : GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity>{
+    public async updateGeoTrackingObject(req: Request, geoTrackingObjectEntity: GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity> {
         return this.geoTrackingObjectRepository.save(geoTrackingObjectEntity);
     }
 
-    public async allGeoTrackingObject(req:Request) : Promise<GeoTrackingObjectEntity[]>{
+    public async allGeoTrackingObject(req: Request): Promise<GeoTrackingObjectEntity[]> {
         return this.geoTrackingObjectRepository.find();
     }
 
-    public async getGeoTrackingObjectById(req:Request, id : number) : Promise<GeoTrackingObjectEntity>{
+    public async getGeoTrackingObjectById(req: Request, id: number): Promise<GeoTrackingObjectEntity> {
         return this.geoTrackingObjectRepository.findOne(id);
     }
 
-    public async getGeoLatLongById(req : Request, id : number){
+    public async getGeoLatLongById(req: Request, id: number) {
         return this.geoLatLongRepository.findOne(id);
+    }
+
+    @Cron(CronExpression.EVERY_30_SECONDS)
+    async uploadData() {
+
+        if (!this.getLatLongRunning) {
+            this.getLatLongRunning = true;
+        }
+
+        let geo: GeoLatLongEntity;
+        let json: any;
+        try {
+            let data = await this.geoLatLongRawRepository.find({ where: " is_processed = false order by id" });
+            if (data.length > 0) {
+                for (let d = 0; d < data.length; d++) {
+                    const raw = data[d];
+                    try {
+                        json = JSON.parse(raw.latLongRecord);
+                        geo = new GeoLatLongEntity();
+                        geo.lat = json.lat;
+                        geo.long = json.long;
+                        geo.recordedDate = raw.createdDate;
+                        await this.geoLatLongRepository.save(geo);
+
+                    } catch (error) {
+                        raw.isValid = false;
+                        raw.isProcessed = true;
+                        await this.geoLatLongRawRepository.save(raw);
+                    }
+                }
+            }
+            this.getLatLongRunning = false;
+        } catch (error) {
+            this.getLatLongRunning = false;
+        }
     }
 
 }

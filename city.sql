@@ -98,17 +98,21 @@ CREATE TABLE IF NOT EXISTS geofence_details (
 CREATE SEQUENCE road_location_cache_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
 CREATE TABLE IF NOT EXISTS road_location_cache (
- 	id bigint NOT NULL DEFAULT nextval('road_location_cache_sequence'),
-  text varchar(500) NOT NULL,  
+ 	id bigint NOT NULL DEFAULT nextval('road_location_cache_sequence'),  
   from_lat_long_id bigint,
   to_lat_long_id bigint,
-  distane bigint,
+  distance float8,
   created_date timestamp default now(),
   updated_date timestamp default now(),
   PRIMARY KEY  (id),  
   CONSTRAINT road_location_cache_from_lat_long_id_fk FOREIGN KEY (from_lat_long_id) REFERENCES latlong (id),
   CONSTRAINT road_location_cache_to_lat_long_id_fk FOREIGN KEY (to_lat_long_id) REFERENCES latlong (id)
 );
+
+SELECT * FROM   latlong  f left join  road_location_cache a on a.from_lat_long_id = f.id join latlong t on t.id = a.to_lat_long_id 
+	where ST_DWithin(f.point, ST_GeomFromText('POINT(72.471104 22.987232)'), 200)
+	and ST_DWithin(t.point, ST_GeomFromText('POINT(72.542797 23.136400)'), 200);
+
 
 CREATE SEQUENCE geo_location_cache_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
@@ -121,6 +125,11 @@ CREATE TABLE IF NOT EXISTS geo_location_cache (
   PRIMARY KEY  (id),  
   CONSTRAINT road_location_cache_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)  
 );
+
+SELECT * FROM   latlong  b left join  geo_location_cache a on a.lat_long_id = b.id where ST_DWithin(b.point, ST_GeomFromText('POINT(72.471104 22.987232)'), 5000);
+SELECT * FROM   latlong  b left join  geo_location_cache a on a.lat_long_id = b.id where ST_DWithin(b.point, ST_GeomFromText('SRID=4326;POINT(72.471104 22.987232)'), 5000);
+SELECT * FROM   latlong  b left join  geo_location_cache a on a.lat_long_id = b.id where ST_DWithin(b.point, ST_GeomFromText('POINT(72.471491 22.988773)'), 200) order by ST_Distance(b.point ,ST_GeomFromText('POINT(72.471491 22.988773)'));
+
 
 CREATE SEQUENCE geo_latlong_raw_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 

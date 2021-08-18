@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,6 +23,7 @@ import { GeoLocationCacheRepository } from './repository/geo.location.cache.repo
 import { GeoLatLongRawRepository } from './repository/geo.lat.long.raw.repository';
 import { GeoLatLongRepository } from './repository/geo.lat.long.repository';
 import { GeoTrackingObjectRepository } from './repository/geo.tracking.object.repository';
+import { RestCallService } from './service/rest-call/rest-call.service';
 
 
 
@@ -32,13 +33,14 @@ import { GeoTrackingObjectRepository } from './repository/geo.tracking.object.re
         JwtModule.register({
             secret: jwtConstants.secret,
             signOptions: { expiresIn: '60m' },
-          }), 
-        TypeOrmModule.forFeature([CitiesEntity, LatlongEntity,CitiesRepository, AddresRepository, GeofenceRepository, 
+        }),
+        TypeOrmModule.forFeature([CitiesEntity, LatlongEntity, CitiesRepository, AddresRepository, GeofenceRepository,
             GeofenceDetailsRepository, LatlongRepository, LocationRepository, PoiRepository,
-            RoadLocationCacheRepository, GeoLocationCacheRepository, GeoLatLongRawRepository, GeoLatLongRepository, 
+            RoadLocationCacheRepository, GeoLocationCacheRepository, GeoLatLongRawRepository, GeoLatLongRepository,
             GeoTrackingObjectRepository]),
+        HttpModule
     ],
     controllers: [LocationController],
-    providers: [CitiesService, AddressService, LocationService]
+    providers: [CitiesService, AddressService, LocationService, RestCallService]
 })
 export class CommonModule { }
