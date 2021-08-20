@@ -462,6 +462,7 @@ export class LocationService {
                         geo = new GeoLatLongEntity();
                         geo.lat = json.lat;
                         geo.long = json.long;
+                        geo.geoTrackingObjectId = json.trackingId;
                         geo.recordedDate = raw.createdDate;
                         await this.geoLatLongRepository.save(geo);
 
