@@ -37,8 +37,15 @@ export class CustomGLobalExceptionHandler extends BaseExceptionFilter {
       message.code = Constants.FAILURE_CODE;
       message.message = exception.message;
     } else {
-      message.code = Constants.FAILURE_CODE;
-      message.message = Constants.FAILURE_RES;
+      if(exception && exception.businessError){        
+        message = exception;
+      }else if(exception && exception.name && exception.name == "Error" && exception.response && exception.response.data && exception.response.data.businessError){                
+        message = exception.response.data;
+      }else{        
+        
+        message.code = Constants.FAILURE_CODE;
+        message.message = Constants.FAILURE_RES;
+      }
     }
 
 
