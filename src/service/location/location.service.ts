@@ -98,7 +98,7 @@ export class LocationService {
             locationEntity.poi = poi;
         }
 
-        this.locationRepository.update(locationEntity.id, locationEntity);
+        this.locationRepository.save(locationEntity);
         return;
     }
 
