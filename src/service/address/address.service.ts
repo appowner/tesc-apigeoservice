@@ -118,6 +118,7 @@ export class AddressService {
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
         if (addressEntity.latLong && addressEntity.latLongId) {
+            console.log("here--");
             addressEntity.latLong.id = addressEntity.latLongId;
             latLong = await this.locationService.updateLatlong(req, addressEntity.latLong);
             addressEntity.latLongId = latLong.id;
@@ -125,12 +126,14 @@ export class AddressService {
         }
 
         if (addressEntity.fence && addressEntity.fenceId) {
+            console.log("here--1");
             geofence = await this.locationService.updateGeofence(req, addressEntity.fence);
             addressEntity.fenceId = geofence.id;
             addressEntity.fence = geofence;
         }
 
         if (addressEntity.poi && !addressEntity.poi.id) {
+            console.log("here--2");
             poi = await this.locationService.updatePoi(req, addressEntity.poi);
             addressEntity.poiId = poi.id;
             addressEntity.poi = poi;
