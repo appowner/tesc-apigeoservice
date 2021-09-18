@@ -97,7 +97,7 @@ export class LocationService {
             locationEntity.fence = geofence;
         }
 
-        if (locationEntity.poi && !locationEntity.poi.id) {
+        if (locationEntity.poi && locationEntity.poiId) {
             poi = await this.updatePoi(req, locationEntity.poi);
             locationEntity.poiId = poi.id;
             locationEntity.poi = poi;
