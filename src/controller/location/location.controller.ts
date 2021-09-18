@@ -237,7 +237,7 @@ export class LocationController {
     let ro: ResponseObject<GeoLocationCacheEntity> = new ResponseObject(be, await this.locationService.getGeoLocationCacheById(req, id));
     return ro;
   }
-  @Get("/findGeoLocationByLatLong")
+  @Post("/findGeoLocationByLatLong")
   // // @UseGuards(JwtAuthGuard)
   async findGeoLocationByLatLong(@Body() body: any, @Req() req: Request,): Promise<ResponseObject<GeoLocationCacheEntity>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
