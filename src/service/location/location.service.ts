@@ -136,6 +136,7 @@ export class LocationService {
     }
 
     public async createGeofence(req: Request, geofence: GeofenceEntity): Promise<GeofenceEntity> {
+        console.log(JSON.stringify(geofence))
         let id = await this.geofenceRepository.query("select nextval('geofence_sequence')");
         let geon = "";
 
