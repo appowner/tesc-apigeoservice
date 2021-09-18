@@ -62,19 +62,19 @@ export class AddressService {
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
-        if (addressEntity.latLong && !addressEntity.latLong.id) {
+        if (addressEntity.latLong) {
             latLong = await this.locationService.createLatlong(req, addressEntity.latLong);
             addressEntity.latLongId = latLong.id;
             addressEntity.latLong = latLong;
         }
 
-        if (addressEntity.fence && !addressEntity.fence.id) {
+        if (addressEntity.fence) {
             geofence = await this.locationService.createGeofence(req, addressEntity.fence);
             addressEntity.fenceId = geofence.id;
             addressEntity.fence = geofence;
         }
 
-        if (addressEntity.poi && !addressEntity.poi.id) {
+        if (addressEntity.poi) {
             poi = await this.locationService.createPoi(req, addressEntity.poi);
             addressEntity.poiId = poi.id;
             addressEntity.poi = poi;
