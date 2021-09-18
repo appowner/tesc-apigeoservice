@@ -98,6 +98,28 @@ CREATE TABLE IF NOT EXISTS geofence_details (
   CONSTRAINT lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
 );
 
+CREATE TABLE public.address (
+	id bigserial NOT NULL,
+	address1 varchar(500) NULL DEFAULT NULL::character varying,
+	address2 varchar(500) NULL DEFAULT NULL::character varying,
+	city varchar(100) NULL DEFAULT NULL::character varying,
+	district varchar(100) NULL DEFAULT NULL::character varying,
+	state varchar(100) NULL DEFAULT NULL::character varying,
+	country varchar(100) NULL DEFAULT NULL::character varying,
+	pincode varchar(20) NULL DEFAULT NULL::character varying,
+	latitude varchar(50) NULL,
+	longitude varchar(50) NULL,
+  lat_long_id bigint,
+  poi_id bigint,
+  fence_id bigint,  
+
+  CONSTRAINT location_fence_id_fk FOREIGN KEY (fence_id) REFERENCES geofence (id),
+  CONSTRAINT location_poi_id_fk FOREIGN KEY (fence_id) REFERENCES poi (id),
+  CONSTRAINT location_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id),
+	CONSTRAINT address_pkey PRIMARY KEY (id)
+);
+
+
 CREATE SEQUENCE road_location_cache_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
 CREATE TABLE IF NOT EXISTS road_location_cache (

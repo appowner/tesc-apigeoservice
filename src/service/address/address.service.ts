@@ -4,11 +4,18 @@ import { BusinessError } from 'src/model/business-error';
 import { BusinessException } from 'src/model/business-exception';
 import { Constants } from 'src/model/constants';
 import { AddressEntity } from 'src/entity/address.entity';
+import { GeofenceEntity } from 'src/entity/geofence.entity';
+import { LatlongEntity } from 'src/entity/latLong.entity';
+import { PoiEntity } from 'src/entity/poi.entity';
+import { LocationService } from '../location/location.service';
 
 @Injectable()
 export class AddressService {
 
-    constructor(private addresRepository: AddresRepository) { }
+    constructor(
+        private addresRepository: AddresRepository,
+        private locationService : LocationService
+        ) { }
 
 
     async findById(id: number): Promise<AddressEntity> {
@@ -51,17 +58,60 @@ export class AddressService {
         return address;
     }
 
-    public async create(addressEntity: AddressEntity): Promise<AddressEntity> {
+    public async create(req, addressEntity: AddressEntity): Promise<AddressEntity> {
+        let latLong: LatlongEntity;
+        let geofence: GeofenceEntity;
+        let poi: PoiEntity;
+        if (addressEntity.latLong && !addressEntity.latLong.id) {
+            latLong = await this.locationService.createLatlong(req, addressEntity.latLong);
+            addressEntity.latLongId = latLong.id;
+            addressEntity.latLong = latLong;
+        }
+
+        if (addressEntity.fence && !addressEntity.fence.id) {
+            geofence = await this.locationService.createGeofence(req, addressEntity.fence);
+            addressEntity.fenceId = geofence.id;
+            addressEntity.fence = geofence;
+        }
+
+        if (addressEntity.poi && !addressEntity.poi.id) {
+            poi = await this.locationService.createPoi(req, addressEntity.poi);
+            addressEntity.poiId = poi.id;
+            addressEntity.poi = poi;
+        }
+
+        
         return await this.addresRepository.save(addressEntity);
     }
 
-    public async update(
+    public async update(req, 
         newValue: AddressEntity,
     ): Promise<AddressEntity | null> {
         const addressEntity = await this.addresRepository.findOne(newValue.id);
 
         if (!addressEntity) {
             throw new BusinessException(Constants.FAILURE_CODE, "Address not found for id -:" + newValue.id);
+        }
+        let latLong: LatlongEntity;
+        let geofence: GeofenceEntity;
+        let poi: PoiEntity;
+        if (addressEntity.latLong && addressEntity.latLongId) {
+            addressEntity.latLong.id = addressEntity.latLongId;
+            latLong = await this.locationService.updateLatlong(req, addressEntity.latLong);
+            addressEntity.latLongId = latLong.id;
+            addressEntity.latLong = latLong;
+        }
+
+        if (addressEntity.fence && addressEntity.fenceId) {
+            geofence = await this.locationService.updateGeofence(req, addressEntity.fence);
+            addressEntity.fenceId = geofence.id;
+            addressEntity.fence = geofence;
+        }
+
+        if (addressEntity.poi && !addressEntity.poi.id) {
+            poi = await this.locationService.updatePoi(req, addressEntity.poi);
+            addressEntity.poiId = poi.id;
+            addressEntity.poi = poi;
         }
 
         newValue = await this.addresRepository.save(newValue);
