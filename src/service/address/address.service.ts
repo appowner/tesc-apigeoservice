@@ -118,26 +118,26 @@ export class AddressService {
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
         console.log(JSON.stringify(newValue));
-        if (addressEntity.latLong && addressEntity.latLongId) {
+        if (newValue.latLong && newValue.latLongId) {
             console.log("here--");
-            addressEntity.latLong.id = addressEntity.latLongId;
-            latLong = await this.locationService.updateLatlong(req, addressEntity.latLong);
-            addressEntity.latLongId = latLong.id;
-            addressEntity.latLong = latLong;
+            newValue.latLong.id = newValue.latLongId;
+            latLong = await this.locationService.updateLatlong(req, newValue.latLong);
+            newValue.latLongId = latLong.id;
+            newValue.latLong = latLong;
         }
 
-        if (addressEntity.fence && addressEntity.fenceId) {
+        if (newValue.fence && newValue.fenceId) {
             console.log("here--1");
-            geofence = await this.locationService.updateGeofence(req, addressEntity.fence);
-            addressEntity.fenceId = geofence.id;
-            addressEntity.fence = geofence;
+            geofence = await this.locationService.updateGeofence(req, newValue.fence);
+            newValue.fenceId = geofence.id;
+            newValue.fence = geofence;
         }
 
-        if (addressEntity.poi && !addressEntity.poi.id) {
+        if (newValue.poi && !newValue.poi.id) {
             console.log("here--2");
-            poi = await this.locationService.updatePoi(req, addressEntity.poi);
-            addressEntity.poiId = poi.id;
-            addressEntity.poi = poi;
+            poi = await this.locationService.updatePoi(req, newValue.poi);
+            newValue.poiId = poi.id;
+            newValue.poi = poi;
         }
 
         newValue = await this.addresRepository.save(newValue);
