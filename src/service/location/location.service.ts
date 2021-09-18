@@ -50,6 +50,10 @@ export class LocationService {
         // console.log(await this.findRoadDistance(null, { fromLat: "23.340382", fromLong: "73.302341", toLat: "23.348057", toLong: "73.206115" }));
     }
 
+    public async allLocation(req : Request) : Promise<LocationEntity[]>{
+        return this.locationRepository.find();
+    }
+
     public async createLocation(req: Request, locationEntity: LocationEntity): Promise<LocationEntity> {
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;

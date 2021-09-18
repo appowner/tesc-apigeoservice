@@ -74,6 +74,22 @@ export class LocationController {
     return ro;
   }
 
+  @Get("/allLocation")
+  // // @UseGuards(JwtAuthGuard)
+  async allLocation(@Req() req: Request): Promise<ResponseObject<LocationEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<LocationEntity[]> = new ResponseObject(be, await this.locationService.allLocation(req))
+    return ro;
+  }
+
+  @Get("/findLocationById")
+  // // @UseGuards(JwtAuthGuard)
+  async findLocationById(@Req() req: Request, @Query('id') id: number): Promise<ResponseObject<LocationEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<LocationEntity> = new ResponseObject(be, await this.locationService.getLocationById(req, id))
+    return ro;
+  }
+
   @Post("/createLocation")
   // // @UseGuards(JwtAuthGuard)
   async createLocation(@Req() req: Request,  @Body() locationEntity: LocationEntity): Promise<ResponseObject<LocationEntity>> {
