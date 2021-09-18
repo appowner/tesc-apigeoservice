@@ -133,7 +133,7 @@ export class AddressService {
             newValue.fence = geofence;
         }
 
-        if (newValue.poi && !newValue.poi.id) {
+        if (newValue.poi && newValue.poiId) {
             console.log("here--2");
             poi = await this.locationService.updatePoi(req, newValue.poi);
             newValue.poiId = poi.id;
