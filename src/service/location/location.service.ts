@@ -202,12 +202,12 @@ export class LocationService {
     }
 
     private createGeofenceQuery(id, name, createdBy, updatedBy, geon): string {
-        let query = `insert into geofence(id, name, created_by, updated_by, geon) values(${id} , \'${name}\',\'${createdBy}\',\'${updatedBy}\',  ST_GeomFromText('POLYGON((${geon}))'));`;
+        let query = `insert into geofence(id, name, created_by, updated_by, geom) values(${id} , \'${name}\',\'${createdBy}\',\'${updatedBy}\',  ST_GeomFromText('POLYGON((${geon}))'));`;
         return query;
     }
 
     private updateGeofenceQuery(id, name, updatedBy, geon): string {
-        let query = `update geofence set name = \'${name}\', updated_by = \'${updatedBy}\', geon = ST_GeomFromText('POLYGON((${geon}))') where id = ${id};`;
+        let query = `update geofence set name = \'${name}\', updated_by = \'${updatedBy}\', geom = ST_GeomFromText('POLYGON((${geon}))') where id = ${id};`;
         return query;
     }
 
