@@ -103,7 +103,7 @@ export class LocationService {
         locationEntity.poi = null;
         locationEntity.fence = null;
 
-        this.locationRepository.update(locationEntity, locationEntity);
+        this.locationRepository.update(locationEntity.id, locationEntity);
         return;
     }
 
