@@ -142,6 +142,22 @@ export class LocationController {
     return ro;
   }
 
+  @Get("/allPoi")
+  // // @UseGuards(JwtAuthGuard)
+  async allPoi(@Req() req: Request): Promise<ResponseObject<PoiEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<PoiEntity[]> = new ResponseObject(be, await this.locationService.allPOI(req))
+    return ro;
+  }
+
+  @Get("/findPoiById")
+  // // @UseGuards(JwtAuthGuard)
+  async findPoiById(@Req() req: Request, @Query('id') id: number): Promise<ResponseObject<PoiEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<PoiEntity> = new ResponseObject(be, await this.locationService.getPoi(req, id))
+    return ro;
+  }
+
   @Post("/createPoi")
   // // @UseGuards(JwtAuthGuard)
   async createPoi(@Req() req: Request,  @Body() poiEntity: PoiEntity): Promise<ResponseObject<PoiEntity>> {

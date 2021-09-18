@@ -248,6 +248,13 @@ export class LocationService {
         return this.latlongRepository.findOne(latlongEntity.id);
     }
 
+
+    public async allPOI(req:Request) : Promise<PoiEntity[]> {
+        
+        return this.poiRepository.find();
+
+    }
+
     public async getPoi(req: Request, id: number): Promise<PoiEntity> {
         let poiEntity: PoiEntity = await this.poiRepository.findOne(id);
 
