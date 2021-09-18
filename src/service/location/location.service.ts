@@ -434,7 +434,8 @@ export class LocationService {
 
     public async findGeoLocationCacheByText(req: Request, text: string): Promise<GeoLocationCacheEntity[]> {
 
-        let query = `lower(address_text) like '%lower(${text})%'`;
+        let query = `lower(address_text) like %lower('${text}')%`;
+        console.log("query"+query);
         let locations: GeoLocationCacheEntity[] = await this.geoLocationCacheRepository.find({ where: query });
 
         for (let index = 0; index < locations.length; index++) {
