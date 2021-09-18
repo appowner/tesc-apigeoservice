@@ -75,7 +75,7 @@ export class LocationService {
         return this.locationRepository.save(locationEntity);;
     }
 
-    public async updateLocation(req: Request, locationEntity: LocationEntity): Promise<LocationEntity> {
+    public async updateLocation(req: Request, locationEntity: LocationEntity): Promise<any> {
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
@@ -98,7 +98,8 @@ export class LocationService {
             locationEntity.poi = poi;
         }
 
-        return this.locationRepository.save(locationEntity);;
+        this.locationRepository.update(locationEntity.id, locationEntity);
+        return;
     }
 
     public async getLocationById(req: Request, id: number): Promise<LocationEntity> {
@@ -295,7 +296,7 @@ export class LocationService {
 
         let res = await this.roadLocationCacheRepository.query(query);
 
-        if (res.length > 0 && res[0].id != null ) {
+        if (res.length > 0 && res[0].id != null) {
             return this.getRoadLocationCacheById(req, res[0].id)
         } else {
             let location: RoadLocationCacheEntity = new RoadLocationCacheEntity();
@@ -379,7 +380,7 @@ export class LocationService {
 
         let res = await this.geoLocationCacheRepository.query(query);
 
-        if (res.length > 0 && res[0].id != null ) {
+        if (res.length > 0 && res[0].id != null) {
             return await this.getGeoLocationCacheById(req, res[0].id);
         } else {
             let temp = await this.restCallService.mapMyIndiaReverseGeoCoding(body.lat, body.long);

@@ -25,26 +25,7 @@ CREATE TABLE IF NOT EXISTS latlong (
   PRIMARY KEY  (id)
 );
 
-CREATE SEQUENCE location_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
-
-CREATE TABLE IF NOT EXISTS location (
- 	id bigint NOT NULL DEFAULT nextval('location_sequence'),
-  location_name varchar(500) NOT NULL,
-  state_name varchar(500) NOT NULL,
-  lat_long_id bigint,
-  poi_id bigint,
-  fence_id bigint,  
-  PRIMARY KEY  (id),
-  CONSTRAINT location_fence_id_fk FOREIGN KEY (fence_id) REFERENCES geofence (id),
-  CONSTRAINT location_poi_id_fk FOREIGN KEY (fence_id) REFERENCES poi (id),
-  CONSTRAINT location_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
-);
-
-
-
-
-INSERT INTO latlong (lat, long, point) values('22.985943', '72.470534', ST_MakePoint(72.470534,22.985943) );
 
 CREATE SEQUENCE poi_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
@@ -77,6 +58,28 @@ CREATE TABLE IF NOT EXISTS geofence (
   geom geometry(Geometry),
   PRIMARY KEY  (id)
 );
+
+CREATE SEQUENCE location_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+
+CREATE TABLE IF NOT EXISTS location (
+ 	id bigint NOT NULL DEFAULT nextval('location_sequence'),
+  location_name varchar(500) NOT NULL,
+  state_name varchar(500) NOT NULL,
+  lat_long_id bigint,
+  poi_id bigint,
+  fence_id bigint,  
+  PRIMARY KEY  (id),
+  CONSTRAINT location_fence_id_fk FOREIGN KEY (fence_id) REFERENCES geofence (id),
+  CONSTRAINT location_poi_id_fk FOREIGN KEY (fence_id) REFERENCES poi (id),
+  CONSTRAINT location_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
+);
+
+
+
+
+INSERT INTO latlong (lat, long, point) values('22.985943', '72.470534', ST_MakePoint(72.470534,22.985943) );
+
 
 insert into geofence(name, created_by, updated_by, geon) values('test', ST_GeomFromText('POLYGON((72.470534 22.985943, 72.470534 22.985943 , 72.473120 22.989143, 72.473023 22.985242, 72.470534 22.985943))'));
 insert into geofence(name, geon) values('test', ST_GeomFromText('POLYGON((72.470534 22.985943, 72.470534 22.985943 , 72.473120 22.989143, 72.473023 22.985242, 72.470534 22.985943))'));
