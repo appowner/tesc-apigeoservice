@@ -117,6 +117,7 @@ export class AddressService {
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
+        console.log(JSON.stringify(newValue));
         if (addressEntity.latLong && addressEntity.latLongId) {
             console.log("here--");
             addressEntity.latLong.id = addressEntity.latLongId;
