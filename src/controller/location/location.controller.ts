@@ -308,7 +308,7 @@ export class LocationController {
     return ro;
   }
 
-  @Get("/findAllGeoTrackingObject")
+  @Get("/findGeoTrackingObjectById")
   // // @UseGuards(JwtAuthGuard)
   async findGeoTrackingObjectById(@Query('id') id: number, @Req() req: Request,): Promise<ResponseObject<GeoTrackingObjectEntity>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
