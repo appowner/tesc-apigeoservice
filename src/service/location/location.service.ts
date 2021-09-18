@@ -271,7 +271,7 @@ export class LocationService {
 
     public async updatePoi(req: Request, poiEntity: PoiEntity): Promise<PoiEntity> {
 
-        let query = `update poi set lat = \'${poiEntity.lat}\', long = \'${poiEntity.long}\', point =  = ST_MakePoint(${poiEntity.long}, ${poiEntity.lat}), poi_provider = \'${poiEntity.poiProvider}\', 
+        let query = `update poi set lat = \'${poiEntity.lat}\', long = \'${poiEntity.long}\', point =  ST_MakePoint(${poiEntity.long}, ${poiEntity.lat}), poi_provider = \'${poiEntity.poiProvider}\', 
             display_name = \'${poiEntity.displayName}\', source_provider = \'${poiEntity.sourceProvider}\' where id = \'${poiEntity.id}\';`
         let res = await this.poiRepository.query(query);
         return this.poiRepository.findOne(poiEntity.id);
