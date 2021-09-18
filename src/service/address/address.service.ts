@@ -8,17 +8,21 @@ import { GeofenceEntity } from 'src/entity/geofence.entity';
 import { LatlongEntity } from 'src/entity/latLong.entity';
 import { PoiEntity } from 'src/entity/poi.entity';
 import { LocationService } from '../location/location.service';
+import { LatlongRepository } from 'src/repository/latlong.repository';
+import { PoiRepository } from 'src/repository/poi.repository';
 
 @Injectable()
 export class AddressService {
 
     constructor(
         private addresRepository: AddresRepository,
-        private locationService : LocationService
-        ) { }
+        private locationService: LocationService,
+        private readonly latlongRepository: LatlongRepository,
+        private readonly poiRepository: PoiRepository,
+    ) { }
 
 
-    async findById(id: number): Promise<AddressEntity> {
+    async findById(req, id: number): Promise<AddressEntity> {
         let address = await this.addresRepository.find({ where: { id: id } });
 
         if (address.length == 0) {
@@ -26,12 +30,25 @@ export class AddressService {
 
         }
 
+        if (address[0].latLongId) {
+            address[0].latLong = await this.latlongRepository.findOne(address[0].latLongId);
+        }
+
+
+        if (address[0].fenceId) {
+            address[0].fence = await this.locationService.getGeofence(address[0].fenceId);
+        }
+
+        if (address[0].poiId) {
+            address[0].poi = await this.locationService.getPoi(req, address[0].poiId);
+        }
+
         return address[0];
     }
 
     async findByIds(ids: number[]): Promise<AddressEntity[]> {
 
-        if(ids == undefined|| ids.length == 0){
+        if (ids == undefined || ids.length == 0) {
             return new Promise(res => {
                 res([]);
             });
@@ -85,11 +102,11 @@ export class AddressService {
             addressEntity.poi = poi;
         }
 
-        
+
         return await this.addresRepository.save(addressEntity);
     }
 
-    public async update(req, 
+    public async update(req,
         newValue: AddressEntity,
     ): Promise<AddressEntity | null> {
         const addressEntity = await this.addresRepository.findOne(newValue.id);
