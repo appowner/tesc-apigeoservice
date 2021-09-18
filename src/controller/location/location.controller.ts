@@ -74,6 +74,16 @@ export class LocationController {
     return ro;
   }
 
+
+  @Post("/updateAddress")
+  // // @UseGuards(JwtAuthGuard)
+  async updateAddress(@Body() addressEntity: AddressEntity): Promise<ResponseObject<AddressEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<AddressEntity> = new ResponseObject(be, await this.addressService.update(addressEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
   @Get("/allLocation")
   // // @UseGuards(JwtAuthGuard)
   async allLocation(@Req() req: Request): Promise<ResponseObject<LocationEntity[]>> {
@@ -176,14 +186,6 @@ export class LocationController {
     return ro;
   }
 
-  @Post("/updateAddress")
-  // // @UseGuards(JwtAuthGuard)
-  async updateAddress(@Body() addressEntity: AddressEntity): Promise<ResponseObject<AddressEntity>> {
-    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
-    let ro: ResponseObject<AddressEntity> = new ResponseObject(be, await this.addressService.update(addressEntity));
-    console.log(JSON.stringify(ro));
-    return ro;
-  }
 
   @Get("/getRoadLocationCacheById")
   // // @UseGuards(JwtAuthGuard)
@@ -193,7 +195,7 @@ export class LocationController {
     return ro;
   }
 
-  @Get("/findRoadDistance")
+  @Post("/findRoadDistance")
   // // @UseGuards(JwtAuthGuard)
   async findRoadDistance(@Body() body: any, @Req() req: Request,): Promise<ResponseObject<RoadLocationCacheEntity>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
