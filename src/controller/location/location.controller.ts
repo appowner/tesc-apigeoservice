@@ -108,6 +108,22 @@ export class LocationController {
     return ro;
   }
 
+  @Get("/allGeofence")
+  // // @UseGuards(JwtAuthGuard)
+  async allGeofence(@Req() req: Request): Promise<ResponseObject<GeofenceEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeofenceEntity[]> = new ResponseObject(be, await this.locationService.allGeofence(req))
+    return ro;
+  }
+
+  @Get("/findGeofenceById")
+  // // @UseGuards(JwtAuthGuard)
+  async findGeofenceById(@Req() req: Request, @Query('id') id: number): Promise<ResponseObject<GeofenceEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<GeofenceEntity> = new ResponseObject(be, await this.locationService.findGeofenceById(req, id))
+    return ro;
+  }
+
   @Post("/createGeofence")
   // // @UseGuards(JwtAuthGuard)
   async createGeofence(@Req() req: Request,  @Body() geofenceEntity: GeofenceEntity): Promise<ResponseObject<GeofenceEntity>> {
