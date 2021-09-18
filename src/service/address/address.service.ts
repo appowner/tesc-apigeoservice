@@ -59,22 +59,27 @@ export class AddressService {
     }
 
     public async create(req, addressEntity: AddressEntity): Promise<AddressEntity> {
+        console.log(JSON.stringify(addressEntity))
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
         if (addressEntity.latLong) {
+            console.log("here");
             latLong = await this.locationService.createLatlong(req, addressEntity.latLong);
             addressEntity.latLongId = latLong.id;
             addressEntity.latLong = latLong;
+
         }
 
         if (addressEntity.fence) {
+            console.log("here--1");
             geofence = await this.locationService.createGeofence(req, addressEntity.fence);
             addressEntity.fenceId = geofence.id;
             addressEntity.fence = geofence;
         }
 
         if (addressEntity.poi) {
+            console.log("here--2");
             poi = await this.locationService.createPoi(req, addressEntity.poi);
             addressEntity.poiId = poi.id;
             addressEntity.poi = poi;
