@@ -50,7 +50,7 @@ export class LocationService {
         // console.log(await this.findRoadDistance(null, { fromLat: "23.340382", fromLong: "73.302341", toLat: "23.348057", toLong: "73.206115" }));
     }
 
-    public async allLocation(req : Request) : Promise<LocationEntity[]>{
+    public async allLocation(req: Request): Promise<LocationEntity[]> {
         return this.locationRepository.find();
     }
 
@@ -117,9 +117,13 @@ export class LocationService {
 
         location.latLong = await this.latlongRepository.findOne(location.latLongId);
 
-        location.fence = await this.getGeofence(location.fenceId);
+        if (location.fenceId) {
+            location.fence = await this.getGeofence(location.fenceId);
+        }
 
-        location.poi = await this.poiRepository.findOne(location.poiId);
+        if (location.poiId) {
+            location.poi = await this.poiRepository.findOne(location.poiId);
+        }
 
         return location;
     }
