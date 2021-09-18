@@ -76,6 +76,7 @@ export class LocationService {
     }
 
     public async updateLocation(req: Request, locationEntity: LocationEntity): Promise<any> {
+        console.log(JSON.stringify(locationEntity));
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
