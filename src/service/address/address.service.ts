@@ -95,7 +95,7 @@ export class AddressService {
             addressEntity.fence = geofence;
         }
 
-        if (addressEntity.poi) {
+        if (addressEntity.poi && addressEntity.poi.lat) {
             console.log("here--2");
             poi = await this.locationService.createPoi(req, addressEntity.poi);
             addressEntity.poiId = poi.id;
