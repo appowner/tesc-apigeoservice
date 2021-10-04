@@ -80,7 +80,7 @@ export class AddressService {
         let latLong: LatlongEntity;
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
-        if (addressEntity.latLong) {
+        if (addressEntity.latLong && addressEntity.latLong.lat) {
             console.log("here");
             latLong = await this.locationService.createLatlong(req, addressEntity.latLong);
             addressEntity.latLongId = latLong.id;
