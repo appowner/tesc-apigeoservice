@@ -24,6 +24,7 @@ import { GeoLatLongRawRepository } from './repository/geo.lat.long.raw.repositor
 import { GeoLatLongRepository } from './repository/geo.lat.long.repository';
 import { GeoTrackingObjectRepository } from './repository/geo.tracking.object.repository';
 import { RestCallService } from './service/rest-call/rest-call.service';
+import { LiveGeoLatLongRepository } from './repository/live.geo.lat.long.repository';
 
 
 
@@ -37,7 +38,7 @@ import { RestCallService } from './service/rest-call/rest-call.service';
         TypeOrmModule.forFeature([CitiesEntity, LatlongEntity, CitiesRepository, AddresRepository, GeofenceRepository,
             GeofenceDetailsRepository, LatlongRepository, LocationRepository, PoiRepository,
             RoadLocationCacheRepository, GeoLocationCacheRepository, GeoLatLongRawRepository, GeoLatLongRepository,
-            GeoTrackingObjectRepository]),
+            GeoTrackingObjectRepository, LiveGeoLatLongRepository]),
         HttpModule
     ],
     controllers: [LocationController],

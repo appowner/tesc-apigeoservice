@@ -191,6 +191,19 @@ CREATE TABLE IF NOT EXISTS geo_latlong (
   PRIMARY KEY  (id)
 );
 
+CREATE SEQUENCE live_geo_latlong_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS live_geo_latlong (
+ 	id bigint NOT NULL DEFAULT nextval('live_geo_latlong_sequence'),
+  geo_tracking_object_id bigint,
+  lat varchar(100) NOT NULL,
+  long varchar(100) NOT NULL,  
+  created_date timestamp default now(),
+  recorded_date timestamp ,
+
+  PRIMARY KEY  (id)
+);
+
 INSERT INTO cities (id, city_name, city_state) VALUES
 (1, 'Kolhapur', 'Maharashtra'),
 (2, 'Port Blair', 'Andaman & Nicobar Islands'),

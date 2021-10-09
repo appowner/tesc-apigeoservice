@@ -22,6 +22,8 @@ import { GeoTrackingObjectRepository } from 'src/repository/geo.tracking.object.
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { GeoLatLongEntity } from 'src/entity/geo.lat.long.entity';
 import { RestCallService } from '../rest-call/rest-call.service';
+import { LiveGeoLatLongEntity } from 'src/entity/live.geo.lat.long.entity';
+import { LiveGeoLatLongRepository } from 'src/repository/live.geo.lat.long.repository';
 
 @Injectable()
 export class LocationService {
@@ -39,7 +41,8 @@ export class LocationService {
         private readonly geoLatLongRawRepository: GeoLatLongRawRepository,
         private readonly geoLatLongRepository: GeoLatLongRepository,
         private readonly geoTrackingObjectRepository: GeoTrackingObjectRepository,
-        private readonly restCallService: RestCallService) {
+        private readonly restCallService: RestCallService,
+        private readonly liveGeoLatLongRepository : LiveGeoLatLongRepository) {
 
 
         this.test()
@@ -147,8 +150,8 @@ export class LocationService {
         return this.geofenceRepository.find();
     }
 
-    public async findGeofenceById(req: Request, id : number): Promise<GeofenceEntity> {
-        return this.getGeofence( id);
+    public async findGeofenceById(req: Request, id: number): Promise<GeofenceEntity> {
+        return this.getGeofence(id);
     }
 
     public async createGeofence(req: Request, geofence: GeofenceEntity): Promise<GeofenceEntity> {
@@ -249,8 +252,8 @@ export class LocationService {
     }
 
 
-    public async allPOI(req:Request) : Promise<PoiEntity[]> {
-        
+    public async allPOI(req: Request): Promise<PoiEntity[]> {
+
         return this.poiRepository.find();
 
     }
@@ -435,7 +438,7 @@ export class LocationService {
     public async findGeoLocationCacheByText(req: Request, text: string): Promise<GeoLocationCacheEntity[]> {
 
         let query = `lower(address_text) like '%${text.toLocaleLowerCase()}%'`;
-        console.log("query"+query);
+        console.log("query" + query);
         let locations: GeoLocationCacheEntity[] = await this.geoLocationCacheRepository.find({ where: query });
 
         for (let index = 0; index < locations.length; index++) {
@@ -474,6 +477,32 @@ export class LocationService {
         return this.geoLatLongRepository.findOne(id);
     }
 
+    public async createGeoLatlong(latlongEntity: GeoLatLongEntity): Promise<GeoLatLongEntity> {
+
+        let id = await this.latlongRepository.query("select nextval('geo_latlong_sequence')");
+        let query = "INSERT INTO geo_latlong (id, geo_tracking_object_id, recorded_date, lat, long, point) " +
+            "values(" + id[0].nextval + ", '" + latlongEntity.geoTrackingObjectId + "' , now()" + ", '" + latlongEntity.lat + "', '" + latlongEntity.long + "', ST_MakePoint(" + latlongEntity.long + "," + latlongEntity.lat + ") );"
+        let res = await this.latlongRepository.query(query);
+
+        return this.geoLatLongRepository.findOne(id[0].nextval);
+    }
+
+
+    public async createLiveGeoLatlong(latlongEntity: GeoLatLongEntity) {
+
+        let live: LiveGeoLatLongEntity = await this.liveGeoLatLongRepository.findOne({where : {geoTrackingObjectId : latlongEntity.geoTrackingObjectId}});
+        if(live == null){            
+            live = new LiveGeoLatLongEntity();
+            live.geoTrackingObjectId = latlongEntity.geoTrackingObjectId;
+        }
+        
+        live.lat = latlongEntity.lat;
+        live.long = latlongEntity.long;
+        live.recordedDate = latlongEntity.recordedDate;        
+
+        this.liveGeoLatLongRepository.save(live);
+    }
+
     @Cron(CronExpression.EVERY_30_SECONDS)
     async uploadData() {
 
@@ -495,7 +524,9 @@ export class LocationService {
                         geo.long = json.long;
                         geo.geoTrackingObjectId = json.trackingId;
                         geo.recordedDate = raw.createdDate;
-                        await this.geoLatLongRepository.save(geo);
+                        await this.createGeoLatlong(geo);
+                        await this.createLiveGeoLatlong(geo);
+                        // await this.geoLatLongRepository.save(geo);
 
                     } catch (error) {
                         raw.isValid = false;
