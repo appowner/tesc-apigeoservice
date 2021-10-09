@@ -534,11 +534,14 @@ export class LocationService {
                         await this.createGeoLatlong(geo);
                         await this.createLiveGeoLatlong(geo);
                         // await this.geoLatLongRepository.save(geo);
+                        raw.isValid = true;
+                        raw.isProcessed = true;
+                        await this.geoLatLongRawRepository.update(raw.id, raw);
 
                     } catch (error) {
                         raw.isValid = false;
                         raw.isProcessed = true;
-                        await this.geoLatLongRawRepository.save(raw);
+                        await this.geoLatLongRawRepository.update(raw.id, raw);
                     }
                 }
             }
