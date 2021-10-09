@@ -16,6 +16,7 @@ import { RoadLocationCacheRepository } from 'src/repository/road.location.cache.
 import { RoadLocationCacheEntity } from 'src/entity/road.location.cache.entity';
 import { GeoLocationCacheEntity } from 'src/entity/geo.location.cache.entity';
 import { GeoTrackingObjectEntity } from 'src/entity/geo.tracking.object.entity';
+import { LiveGeoLatLongEntity } from 'src/entity/live.geo.lat.long.entity';
 
 @Controller('location')
 @UseFilters(new CustomGLobalExceptionHandler())
@@ -315,5 +316,20 @@ export class LocationController {
     let ro: ResponseObject<GeoTrackingObjectEntity> = new ResponseObject(be, await this.locationService.getGeoTrackingObjectById(req, id));
     return ro;
   }
+  
+  @Get("/allTripLiveLocation")
+  // // @UseGuards(JwtAuthGuard)
+  async allTripLiveLocation(@Req() req: Request,): Promise<ResponseObject<LiveGeoLatLongEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<LiveGeoLatLongEntity[]> = new ResponseObject(be, await this.locationService.allTripLiveLocation(req));
+    return ro;
+  }
 
+  @Get("/tripLiveLocation")
+  // // @UseGuards(JwtAuthGuard)
+  async tripLiveLocation(@Query('id') id: number, @Req() req: Request,): Promise<ResponseObject<LiveGeoLatLongEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<LiveGeoLatLongEntity> = new ResponseObject(be, await this.locationService.tripLiveLocation(req, id));
+    return ro;
+  }
 }

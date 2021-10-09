@@ -1,5 +1,9 @@
 import { HttpService, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
+import { TripEntity } from 'src/entity/trip.entity';
+import { ResponseObject } from 'src/model/response-object';
+import { Request } from 'express';
+import { DriverEntity } from 'src/entity/Driver.entity';
 
 @Injectable()
 export class RestCallService {
@@ -61,5 +65,36 @@ export class RestCallService {
         let res: AxiosResponse<any> = await this.httpService.get<any>(url
         ).toPromise();
         return res.data && res.data.results ? res.data.results : [];
+    }
+
+    async findTripById(req: Request, id: number): Promise<TripEntity> {
+        let res: AxiosResponse<ResponseObject<TripEntity>> = await this.httpService.get<ResponseObject<TripEntity>>(process.env.ROUTER_URL
+            + 'order/findTrip?id=' + id
+            , { headers: this.getHeaders(req) }).toPromise();
+        return res.data.res;
+    }
+
+    async liveTrips(req: Request): Promise<TripEntity[]> {
+        let res: AxiosResponse<ResponseObject<TripEntity[]>> = await this.httpService.post<ResponseObject<TripEntity[]>>(process.env.ROUTER_URL + 'order/tripLiveFilter',
+            { }, { headers: this.getHeaders(req) }).toPromise();
+        return res.data.res;
+    }
+
+    async findDriverById(req: Request, id: number): Promise<DriverEntity> {
+        let res: AxiosResponse<ResponseObject<DriverEntity>> = await this.httpService.get<ResponseObject<DriverEntity>>(process.env.ROUTER_URL
+            + 'driver/find?id=' + id
+            , { headers: this.getHeaders(req) }).toPromise();
+        return res.data.res;
+    }
+
+    async findDriverByIds(req: Request, ids: number[]): Promise<DriverEntity[]> {
+        let res: AxiosResponse<ResponseObject<DriverEntity[]>> = await this.httpService.post<ResponseObject<DriverEntity[]>>(process.env.ROUTER_URL
+            + 'driver/findByIds',
+            { ids: ids }, { headers: this.getHeaders(req) }).toPromise();
+        return res.data.res;
+    }
+
+    getHeaders(req: Request) {
+        return { 'authorization': req.headers['authorization'] ? req.headers['authorization'] : "", 'guid': req.headers['guid'] ? req.headers['guid'] : "" };
     }
 }

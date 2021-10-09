@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Req } from '@nestjs/common';
 import { GeofenceDetailsEntity } from 'src/entity/geofence.details.entity';
 import { GeofenceEntity } from 'src/entity/geofence.entity';
 import { LatlongEntity } from 'src/entity/latLong.entity';
@@ -24,6 +24,7 @@ import { GeoLatLongEntity } from 'src/entity/geo.lat.long.entity';
 import { RestCallService } from '../rest-call/rest-call.service';
 import { LiveGeoLatLongEntity } from 'src/entity/live.geo.lat.long.entity';
 import { LiveGeoLatLongRepository } from 'src/repository/live.geo.lat.long.repository';
+import { In } from 'typeorm';
 
 @Injectable()
 export class LocationService {
@@ -510,6 +511,48 @@ export class LocationService {
         
     }
 
+    public async allTripLiveLocation(req: Request): Promise<LiveGeoLatLongEntity[]> {
+        let trips = await this.restCallService.liveTrips(req);
+
+        if(trips.length == 0){
+            return [];
+        }
+
+        let driverIds =  trips.map(val => val.driverId);
+
+        if(driverIds.length == 0){
+            return [];
+        }
+
+        let drivers = await this.restCallService.findDriverByIds(req, driverIds);
+
+        if(drivers.length == 0) {
+            return [];
+        }
+
+        let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : In(drivers.map(val => val.contactNumber)) }});
+
+        if(temp.length == 0){
+            return [];
+        }
+
+        return await this.liveGeoLatLongRepository.find({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
+
+    }
+
+    public async tripLiveLocation(req: Request, id: number): Promise<LiveGeoLatLongEntity> {
+        let trips = await this.restCallService.findTripById(req, id);
+        
+        let driver = await this.restCallService.findDriverById(req, trips.driverId);
+
+        let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : driver.contactNumber }});
+
+        return await this.liveGeoLatLongRepository.findOne({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
+
+    }
+
+
+
     @Cron(CronExpression.EVERY_30_SECONDS)
     async uploadData() {
 
@@ -550,5 +593,7 @@ export class LocationService {
             this.getLatLongRunning = false;
         }
     }
+
+    
 
 }
