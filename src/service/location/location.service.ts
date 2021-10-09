@@ -494,13 +494,20 @@ export class LocationService {
         if(live == null){            
             live = new LiveGeoLatLongEntity();
             live.geoTrackingObjectId = latlongEntity.geoTrackingObjectId;
+            live.lat = latlongEntity.lat;
+            live.long = latlongEntity.long;
+            live.recordedDate = latlongEntity.recordedDate;        
+    
+            this.liveGeoLatLongRepository.save(live);
+        }else{
+            
+            live.lat = latlongEntity.lat;
+            live.long = latlongEntity.long;
+            live.recordedDate = latlongEntity.recordedDate;        
+    
+            this.liveGeoLatLongRepository.update(live.id, live);
         }
         
-        live.lat = latlongEntity.lat;
-        live.long = latlongEntity.long;
-        live.recordedDate = latlongEntity.recordedDate;        
-
-        this.liveGeoLatLongRepository.save(live);
     }
 
     @Cron(CronExpression.EVERY_30_SECONDS)
