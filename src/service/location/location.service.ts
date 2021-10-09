@@ -516,8 +516,8 @@ export class LocationService {
         
     }
 
-    public async allTripLiveLocation(req: Request): Promise<LiveGeoLatLongEntity[]> {
-        let trips = await this.restCallService.liveTrips(req);
+    public async allTripLiveLocation(req: Request, body : any): Promise<LiveGeoLatLongEntity[]> {
+        let trips = await this.restCallService.liveTrips(req, body ? body : {});
 
         if(trips.length == 0){
             return [];

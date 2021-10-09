@@ -74,9 +74,9 @@ export class RestCallService {
         return res.data.res;
     }
 
-    async liveTrips(req: Request): Promise<TripEntity[]> {
+    async liveTrips(req: Request, body): Promise<TripEntity[]> {
         let res: AxiosResponse<ResponseObject<TripEntity[]>> = await this.httpService.post<ResponseObject<TripEntity[]>>(process.env.ROUTER_URL + 'order/tripLiveFilter',
-            { }, { headers: this.getHeaders(req) }).toPromise();
+            body, { headers: this.getHeaders(req) }).toPromise();
         return res.data.res;
     }
 

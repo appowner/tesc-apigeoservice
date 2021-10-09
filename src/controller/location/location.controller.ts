@@ -319,9 +319,9 @@ export class LocationController {
   
   @Get("/allTripLiveLocation")
   // // @UseGuards(JwtAuthGuard)
-  async allTripLiveLocation(@Req() req: Request,): Promise<ResponseObject<LiveGeoLatLongEntity[]>> {
+  async allTripLiveLocation(@Req() req: Request, @Body() body): Promise<ResponseObject<LiveGeoLatLongEntity[]>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
-    let ro: ResponseObject<LiveGeoLatLongEntity[]> = new ResponseObject(be, await this.locationService.allTripLiveLocation(req));
+    let ro: ResponseObject<LiveGeoLatLongEntity[]> = new ResponseObject(be, await this.locationService.allTripLiveLocation(req, body));
     return ro;
   }
 
