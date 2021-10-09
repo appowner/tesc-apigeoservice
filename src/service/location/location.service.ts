@@ -459,6 +459,11 @@ export class LocationService {
     }
 
     public async createGeoTrackingObject(req: Request, geoTrackingObjectEntity: GeoTrackingObjectEntity): Promise<GeoTrackingObjectEntity> {
+        let temp = this.geoTrackingObjectRepository.findOne({where: {objectType : geoTrackingObjectEntity.objectType, objectValue : geoTrackingObjectEntity.objectValue}})
+        if(temp){
+            return temp;
+        }
+
         return this.geoTrackingObjectRepository.save(geoTrackingObjectEntity);
     }
 
