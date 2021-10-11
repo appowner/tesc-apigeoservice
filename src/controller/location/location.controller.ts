@@ -317,7 +317,7 @@ export class LocationController {
     return ro;
   }
   
-  @Get("/allTripLiveLocation")
+  @Post("/allTripLiveLocation")
   // // @UseGuards(JwtAuthGuard)
   async allTripLiveLocation(@Req() req: Request, @Body() body): Promise<ResponseObject<LiveGeoLatLongEntity[]>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
