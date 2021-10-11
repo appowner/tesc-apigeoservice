@@ -537,11 +537,18 @@ export class LocationService {
 
         let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : In(drivers.map(val => val.contactNumber)) }});
 
+        
+
         if(temp.length == 0){
             return [];
         }
 
-        return await this.liveGeoLatLongRepository.find({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
+        let list =  await this.liveGeoLatLongRepository.find({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
+        list.forEach(live => live.geoTrackingObject = temp.find(val => live.geoTrackingObjectId == val.id));
+        list.forEach(live => live.trip = trips.find(val => val.driverId = drivers.
+            find(driver => live.geoTrackingObject.objectType == 'sim' && live.geoTrackingObject.objectValue == driver.contactNumber).id))
+
+        return list;
 
     }
 
@@ -552,8 +559,11 @@ export class LocationService {
 
         let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : driver.contactNumber }});
 
-        return await this.liveGeoLatLongRepository.findOne({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
+        let live = await this.liveGeoLatLongRepository.findOne({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
 
+        live.trip = trips;
+
+        return live;
     }
 
 

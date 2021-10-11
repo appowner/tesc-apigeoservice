@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger/dist/decorators/api-property.decorator';
 import { GeoTrackingObjectEntity } from './geo.tracking.object.entity';
+import { TripEntity } from './trip.entity';
 
 
 @Entity({ name: "live_geo_latlong" })
@@ -27,6 +28,7 @@ export class LiveGeoLatLongEntity {
     @Column({name: "recorded_date"})
     recordedDate:Date;
     
+    trip : TripEntity;
 
     constructor(){        
        
