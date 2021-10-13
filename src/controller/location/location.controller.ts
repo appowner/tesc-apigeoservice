@@ -48,6 +48,14 @@ export class LocationController {
     return ro;
   }
 
+  @Get("/findCityById")
+  // // @UseGuards(JwtAuthGuard)
+  async findCityById(@Query('id') id: number): Promise<ResponseObject<CitiesEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<CitiesEntity> = new ResponseObject(be, await this.citiesService.findCityById(id))
+    return ro;
+  }
+
 
   @Get("/findAddressById")
   // // @UseGuards(JwtAuthGuard)

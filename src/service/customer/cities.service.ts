@@ -38,6 +38,11 @@ export class CitiesService {
 
     }
 
+    public async findCityById(id: number): Promise<CitiesEntity> {
+        return await this.citiesRepository.findOne(id);
+
+    }
+
     // public async findByUserName(userName: string): Promise<CustomerEntity | null> {
     //     // return await this.customerRepository.findOne({where : {userName : userName}});
     //     return await this.customerRepository.findOne({ where: "LOWER(user_name) = LOWER('" + userName + "')" });
