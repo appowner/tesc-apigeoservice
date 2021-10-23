@@ -46,6 +46,15 @@ export class AddressService {
         return address[0];
     }
 
+
+    async findAll(): Promise<AddressEntity[]> {
+        
+
+        let address = await this.addresRepository.find();
+
+        return address;
+    }
+    
     async findByIds(ids: number[]): Promise<AddressEntity[]> {
 
         if (ids == undefined || ids.length == 0) {

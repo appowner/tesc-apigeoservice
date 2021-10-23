@@ -74,6 +74,14 @@ export class LocationController {
   }
 
 
+  @Post("/findAllAddress")
+  // // @UseGuards(JwtAuthGuard)
+  async findAllAddress(): Promise<ResponseObject<AddressEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<AddressEntity[]> = new ResponseObject(be, await this.addressService.findAll());
+    return ro;
+  }
+
   @Post("/createAddress")
   // // @UseGuards(JwtAuthGuard)
   async createAddress(@Req() req: Request, @Body() addressEntity: AddressEntity): Promise<ResponseObject<AddressEntity>> {
