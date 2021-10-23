@@ -126,7 +126,7 @@ export class LocationController {
     return ro;
   }
 
-  @Post("/udpateLocation")
+  @Post("/updateLocation")
   // // @UseGuards(JwtAuthGuard)
   async udpateLocation(@Req() req: Request, @Body() locationEntity: LocationEntity): Promise<ResponseObject<LocationEntity>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
@@ -134,6 +134,41 @@ export class LocationController {
     console.log(JSON.stringify(ro));
     return ro;
   }
+
+  @Get("/allCities")
+  // // @UseGuards(JwtAuthGuard)
+  async allCities(@Req() req: Request): Promise<ResponseObject<CitiesEntity[]>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<CitiesEntity[]> = new ResponseObject(be, await this.locationService.allCities(req))
+    return ro;
+  }
+
+  @Get("/findCitysById")
+  // // @UseGuards(JwtAuthGuard)
+  async findCitiesById(@Req() req: Request, @Query('id') id: number): Promise<ResponseObject<CitiesEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<CitiesEntity> = new ResponseObject(be, await this.locationService.getCityById(req, id))
+    return ro;
+  }
+
+  @Post("/createCity")
+  // // @UseGuards(JwtAuthGuard)
+  async createCity(@Req() req: Request, @Body() locationEntity: CitiesEntity): Promise<ResponseObject<CitiesEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<CitiesEntity> = new ResponseObject(be, await this.locationService.createCity(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
+  @Post("/updateCity")
+  // // @UseGuards(JwtAuthGuard)
+  async udpateCity(@Req() req: Request, @Body() locationEntity: CitiesEntity): Promise<ResponseObject<CitiesEntity>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<CitiesEntity> = new ResponseObject(be, await this.locationService.updateCity(req, locationEntity));
+    console.log(JSON.stringify(ro));
+    return ro;
+  }
+
 
   @Get("/allGeofence")
   // // @UseGuards(JwtAuthGuard)

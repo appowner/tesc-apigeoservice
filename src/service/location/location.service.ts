@@ -25,6 +25,8 @@ import { RestCallService } from '../rest-call/rest-call.service';
 import { LiveGeoLatLongEntity } from 'src/entity/live.geo.lat.long.entity';
 import { LiveGeoLatLongRepository } from 'src/repository/live.geo.lat.long.repository';
 import { In } from 'typeorm';
+import { CitiesEntity } from 'src/entity/cities.entity';
+import { CitiesRepository } from 'src/repository/cities-repository';
 
 @Injectable()
 export class LocationService {
@@ -43,7 +45,8 @@ export class LocationService {
         private readonly geoLatLongRepository: GeoLatLongRepository,
         private readonly geoTrackingObjectRepository: GeoTrackingObjectRepository,
         private readonly restCallService: RestCallService,
-        private readonly liveGeoLatLongRepository : LiveGeoLatLongRepository) {
+        private readonly liveGeoLatLongRepository : LiveGeoLatLongRepository,
+        private readonly citiesRepository: CitiesRepository) {
 
 
         this.test()
@@ -131,6 +134,86 @@ export class LocationService {
 
         return location;
     }
+
+    public async createCity(req: Request, cityEntity: CitiesEntity): Promise<CitiesEntity> {
+        let latLong: LatlongEntity;
+        let geofence: GeofenceEntity;
+        let poi: PoiEntity;
+        if (cityEntity.latLong && !cityEntity.latLong.id) {
+            latLong = await this.createLatlong(req, cityEntity.latLong);
+            cityEntity.latLongId = latLong.id;
+            cityEntity.latLong = latLong;
+        }
+
+        if (cityEntity.fence && !cityEntity.fence.id) {
+            geofence = await this.createGeofence(req, cityEntity.fence);
+            cityEntity.fenceId = geofence.id;
+            cityEntity.fence = geofence;
+        }
+
+        if (cityEntity.poi && !cityEntity.poi.id) {
+            poi = await this.createPoi(req, cityEntity.poi);
+            cityEntity.poiId = poi.id;
+            cityEntity.poi = poi;
+        }
+
+        return this.citiesRepository.save(cityEntity);;
+    }
+
+    public async updateCity(req: Request, cityEntity: CitiesEntity): Promise<any> {
+        console.log(JSON.stringify(cityEntity));
+        let latLong: LatlongEntity;
+        let geofence: GeofenceEntity;
+        let poi: PoiEntity;
+        if (cityEntity.latLong && cityEntity.latLongId) {
+            cityEntity.latLong.id = cityEntity.latLongId;
+            latLong = await this.updateLatlong(req, cityEntity.latLong);
+            cityEntity.latLongId = latLong.id;
+            cityEntity.latLong = latLong;
+        }
+
+        if (cityEntity.fence && cityEntity.fenceId) {
+            geofence = await this.updateGeofence(req, cityEntity.fence);
+            cityEntity.fenceId = geofence.id;
+            cityEntity.fence = geofence;
+        }
+
+        if (cityEntity.poi && cityEntity.poiId) {
+            poi = await this.updatePoi(req, cityEntity.poi);
+            cityEntity.poiId = poi.id;
+            cityEntity.poi = poi;
+        }
+
+        cityEntity.latLong = null;
+        cityEntity.poi = null;
+        cityEntity.fence = null;
+
+        this.citiesRepository.update(cityEntity.id, cityEntity);
+        return;
+    }
+
+    public async allCities(req: Request): Promise<CitiesEntity[]> {
+        return this.citiesRepository.find();
+    }
+
+    public async getCityById(req: Request, id: number): Promise<CitiesEntity> {
+
+        let location: CitiesEntity = await this.citiesRepository.findOne(id);
+
+        location.latLong = await this.latlongRepository.findOne(location.latLongId);
+
+        if (location.fenceId) {
+            location.fence = await this.getGeofence(location.fenceId);
+        }
+
+        if (location.poiId) {
+            location.poi = await this.poiRepository.findOne(location.poiId);
+        }
+
+        return location;
+    }
+
+    
 
     public async getGeofence(id: number): Promise<GeofenceEntity> {
         let geoFence: GeofenceEntity = await this.geofenceRepository.findOne(id);

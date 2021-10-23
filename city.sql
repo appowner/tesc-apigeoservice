@@ -4,14 +4,7 @@ DROP TABLE IF EXISTS cities;
 
 DROP SEQUENCE IF EXISTS cities_sequence;
 
-CREATE SEQUENCE cities_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
 
-CREATE TABLE IF NOT EXISTS cities (
- 	id bigint NOT NULL DEFAULT nextval('cities_sequence'),
-  city_name varchar(100) NOT NULL,
-  city_state varchar(100) NOT NULL,
-  PRIMARY KEY  (id)
-);
 
 CREATE EXTENSION postgis;
 
@@ -202,6 +195,24 @@ CREATE TABLE IF NOT EXISTS live_geo_latlong (
   recorded_date timestamp ,
 
   PRIMARY KEY  (id)
+);
+
+CREATE SEQUENCE cities_sequence INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS cities (
+ 	id bigint NOT NULL DEFAULT nextval('cities_sequence'),
+  city_name varchar(100) NOT NULL,
+  city_state varchar(100) NOT NULL,
+
+  lat_long_id bigint,
+  poi_id bigint,
+  fence_id bigint,  
+  
+  PRIMARY KEY  (id),
+  CONSTRAINT location_fence_id_fk FOREIGN KEY (fence_id) REFERENCES geofence (id),
+  CONSTRAINT location_poi_id_fk FOREIGN KEY (fence_id) REFERENCES poi (id),
+  CONSTRAINT location_lat_long_id_fk FOREIGN KEY (lat_long_id) REFERENCES latlong (id)
+  
 );
 
 INSERT INTO cities (id, city_name, city_state) VALUES
