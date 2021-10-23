@@ -50,7 +50,7 @@ export class AddressService {
     async findAll(): Promise<AddressEntity[]> {
         
 
-        let address = await this.addresRepository.find();
+        let address = await this.addresRepository.find({order : {id : "ASC"}});
 
         return address;
     }
