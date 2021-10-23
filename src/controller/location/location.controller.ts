@@ -74,7 +74,7 @@ export class LocationController {
   }
 
 
-  @Post("/findAllAddress")
+  @Get("/findAllAddress")
   // // @UseGuards(JwtAuthGuard)
   async findAllAddress(): Promise<ResponseObject<AddressEntity[]>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
