@@ -188,7 +188,7 @@ export class LocationService {
         cityEntity.poi = null;
         cityEntity.fence = null;
 
-        this.citiesRepository.update(cityEntity.id, cityEntity);
+        await this.citiesRepository.update(cityEntity.id, cityEntity);
         return;
     }
 
