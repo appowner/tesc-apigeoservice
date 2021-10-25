@@ -190,7 +190,8 @@ export class LocationService {
 
         console.log(JSON.stringify(cityEntity))
 
-        await this.citiesRepository.update(cityEntity.id, cityEntity);
+        // await this.citiesRepository.update(cityEntity.id, cityEntity);
+        await this.citiesRepository.save(cityEntity);
         return;
     }
 
