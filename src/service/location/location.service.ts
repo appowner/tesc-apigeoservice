@@ -188,6 +188,8 @@ export class LocationService {
         cityEntity.poi = null;
         cityEntity.fence = null;
 
+        console.log(JSON.stringify(cityEntity))
+
         await this.citiesRepository.update(cityEntity.id, cityEntity);
         return;
     }
