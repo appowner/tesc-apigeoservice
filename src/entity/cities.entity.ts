@@ -3,8 +3,9 @@ import { GeofenceEntity } from "./geofence.entity";
 import { LatlongEntity } from "./latLong.entity";
 import { PoiEntity } from "./poi.entity";
 
-@Index("cities_pkey", ["id"], { unique: true })
-@Entity("cities", { schema: "public" })
+// @Index("cities_pkey", ["id"], { unique: true })
+// @Entity("cities", { schema: "public" })
+@Entity({ name: "cities" })
 export class CitiesEntity {
 
   @PrimaryGeneratedColumn({ type: "bigint", name: "id" })
