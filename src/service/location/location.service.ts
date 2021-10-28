@@ -692,7 +692,7 @@ export class LocationService {
         query += "and recorded_date between '" + startDate + "' and '" + endDate + "' ";
     
 
-        let path = await this.geoLatLongRepository.find({where : query})
+        let path = await this.geoLatLongRepository.find({where : query, order : {id : 'DESC'}})
 
         let body = {
             live : live,
