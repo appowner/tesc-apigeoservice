@@ -67,9 +67,9 @@ export class LocationController {
 
   @Post("/findAddressByIds")
   // // @UseGuards(JwtAuthGuard)
-  async findAddressByIds(@Body('ids') ids: number[]): Promise<ResponseObject<AddressEntity[]>> {
+  async findAddressByIds(@Req() req, @Body('ids') ids: number[]): Promise<ResponseObject<AddressEntity[]>> {
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
-    let ro: ResponseObject<AddressEntity[]> = new ResponseObject(be, await this.addressService.findByIds(ids));
+    let ro: ResponseObject<AddressEntity[]> = new ResponseObject(be, await this.addressService.findByIds(req, ids));
     return ro;
   }
 

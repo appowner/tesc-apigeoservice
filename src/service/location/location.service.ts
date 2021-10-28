@@ -321,6 +321,10 @@ export class LocationService {
         return this.latlongRepository.findOne(id);
     }
 
+    public async getLatlongByIds(req: Request, ids: number[]): Promise<LatlongEntity[]> {
+        return this.latlongRepository.findByIds(ids);
+    }
+
     public async createLatlong(req: Request, latlongEntity: LatlongEntity): Promise<LatlongEntity> {
 
         let id = await this.latlongRepository.query("select nextval('latlong_sequence')");
