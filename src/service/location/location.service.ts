@@ -656,6 +656,42 @@ export class LocationService {
         return live;
     }
 
+    public async tripRoute(req: Request, id: number): Promise<{}> {
+        let trips = await this.restCallService.findTripById(req, id);
+        
+        let driver = await this.restCallService.findDriverById(req, trips.driverId);
+
+        let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : driver.contactNumber }});
+
+        let live = await this.liveGeoLatLongRepository.findOne({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
+
+        if(live){
+            live.trip = trips;
+        }
+        
+
+        
+        if(temp.length == 0){
+            return {};
+        }
+
+        let query = " geo_tracking_object_id in ( "+temp.join(",")+" ) ";
+        let dt = new Date(Date.now());
+        let endDate = trips.endTime != null ? trips.endTime : dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds(); 
+        query += "and recorded_date between '" + trips.startTime + "' and '" + endDate + " 23:59:59' ";
+    
+
+        let path = await this.geoLatLongRepository.find({where : query})
+
+        let body = {
+            live : live,
+            trip : trips,
+            geoLatLongs : path
+        }
+
+        return body;
+    }
+
 
 
     @Cron(CronExpression.EVERY_30_SECONDS)

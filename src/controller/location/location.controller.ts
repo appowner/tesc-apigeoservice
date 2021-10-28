@@ -383,4 +383,12 @@ export class LocationController {
     let ro: ResponseObject<LiveGeoLatLongEntity> = new ResponseObject(be, await this.locationService.tripLiveLocation(req, id));
     return ro;
   }
+
+  @Get("/tripRoute")
+  // // @UseGuards(JwtAuthGuard)
+  async tripRoute(@Query('id') id: number, @Req() req: Request,): Promise<ResponseObject<{}>> {
+    let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
+    let ro: ResponseObject<{}> = new ResponseObject(be, await this.locationService.tripRoute(req, id));
+    return ro;
+  }
 }
