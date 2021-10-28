@@ -675,7 +675,7 @@ export class LocationService {
             return {};
         }
 
-        let query = " geo_tracking_object_id in ( "+temp.join(",")+" ) ";
+        let query = " geo_tracking_object_id in ( "+temp.map(val => val.id).join(",")+" ) ";
         let dt = new Date(Date.now());
         let endDate = trips.endTime != null ? trips.endTime : dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds(); 
         query += "and recorded_date between '" + trips.startTime + "' and '" + endDate + " 23:59:59' ";
