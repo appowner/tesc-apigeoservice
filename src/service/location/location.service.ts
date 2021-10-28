@@ -675,6 +675,9 @@ export class LocationService {
             return {};
         }
 
+        console.log("trips.startTime"+trips.startTime);
+        console.log("trips.endTime"+trips.endTime);
+
         let query = " geo_tracking_object_id in ( "+temp.map(val => val.id).join(",")+" ) ";
         let dt = new Date(Date.now());
         
