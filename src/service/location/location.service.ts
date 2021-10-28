@@ -658,7 +658,9 @@ export class LocationService {
 
     public async tripRoute(req: Request, id: number): Promise<{}> {
         let trips = await this.restCallService.findTripById(req, id);
-        
+        if(trips.startTime == null){
+            return {};
+        }
         let driver = await this.restCallService.findDriverById(req, trips.driverId);
 
         let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : driver.contactNumber }});
@@ -675,16 +677,29 @@ export class LocationService {
             return {};
         }
 
-        console.log("trips.startTime"+trips.startTime);
-        console.log("trips.endTime"+trips.endTime);
+        
 
         let query = " geo_tracking_object_id in ( "+temp.map(val => val.id).join(",")+" ) ";
         let dt = new Date(Date.now());
-        
+        let startDate = trips.startTime;
         let endDate = trips.endTime != null ? trips.endTime : dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds(); 
-        query += "and recorded_date between '" + trips.startTime + "' and '" + endDate + " 23:59:59' ";
-    
+        if(endDate.indexOf("T") != -1){
+            endDate = endDate.replace("T", " ");
+        }
+        if(startDate.indexOf("T") != -1){
+            startDate = startDate.replace("T", " ");
+        }
 
+        if(endDate.indexOf(".000Z") != -1){
+            endDate = endDate.replace(".000Z", "");
+        }
+        if(startDate.indexOf(".000Z") != -1){
+            startDate = startDate.replace(".000Z", "");
+        }
+        query += "and recorded_date between '" + startDate + "' and '" + endDate + "' ";
+    
+        console.log("trips.startTime"+startDate);
+        console.log("trips.endTime"+endDate);
         let path = await this.geoLatLongRepository.find({where : query})
 
         let body = {
