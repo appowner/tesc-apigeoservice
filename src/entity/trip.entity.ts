@@ -36,10 +36,10 @@ export class TripEntity {
   status: string | null;
 
   @Column({ name: "start_time", nullable: true })
-  startTime: Date | null;
+  startTime: string | null;
 
   @Column({ name: "end_time", nullable: true })
-  endTime: Date | null;
+  endTime: string | null;
 
   @Column("double precision", {
     name: "from_lat",
