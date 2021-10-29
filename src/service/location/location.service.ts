@@ -682,6 +682,8 @@ export class LocationService {
         let query = " geo_tracking_object_id in ( "+temp.map(val => val.id).join(",")+" ) ";
         let dt = new Date(Date.now());
         let startDate = trips.startTime;
+        console.log("start-date--:"+new Date(startDate).toLocaleDateString())
+        console.log("start-date--:"+new Date(startDate).toLocaleString())
         let endDate = trips.endTime != null ? trips.endTime : dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds(); 
         if(endDate.indexOf("T") != -1){
             endDate = endDate.replace("T", " ");
