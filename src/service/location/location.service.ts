@@ -684,8 +684,10 @@ export class LocationService {
         let startDate = trips.startTime;
         console.log("start-date--:"+new Date(startDate).toLocaleDateString())
         console.log("start-date--:"+new Date(startDate).toLocaleString('en-GB', { timeZone: 'Asia/Calcutta', hour12: false }));        
+        startDate = new Date(startDate).toLocaleString('en-GB', { timeZone: 'Asia/Calcutta', hour12: false }).replace(",", "");
         let endDate = trips.endTime != null ? trips.endTime : dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds(); 
-        if(endDate.indexOf("T") != -1){
+        endDate = new Date(endDate).toLocaleString('en-GB', { timeZone: 'Asia/Calcutta', hour12: false }).replace(",", "");
+        /*if(endDate.indexOf("T") != -1){
             endDate = endDate.replace("T", " ");
         }
         if(startDate.indexOf("T") != -1){
@@ -697,7 +699,7 @@ export class LocationService {
         }
         if(startDate.indexOf(".000Z") != -1){
             startDate = startDate.replace(".000Z", "");
-        }
+        }*/
         query += "and recorded_date between '" + startDate + "' and '" + endDate + "' ";
     
         console.log("trips.startTime"+startDate);
