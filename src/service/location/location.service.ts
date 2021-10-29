@@ -683,7 +683,7 @@ export class LocationService {
         let dt = new Date(Date.now());
         let startDate = trips.startTime;
         console.log("start-date--:"+new Date(startDate).toLocaleDateString())
-        console.log("start-date--:"+new Date(startDate).toLocaleString())
+        console.log("start-date--:"+new Date(startDate).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' }));
         let endDate = trips.endTime != null ? trips.endTime : dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds(); 
         if(endDate.indexOf("T") != -1){
             endDate = endDate.replace("T", " ");
