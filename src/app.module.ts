@@ -42,7 +42,7 @@ import { RestCallService } from './service/rest-call/rest-call.service';
 export class AppModule {
 
   constructor(){
-    process.env.TZ = 'Asia/Kolkata';
+    process.env.TZ = 'Asia/Calcutta';
   }
 
 }
