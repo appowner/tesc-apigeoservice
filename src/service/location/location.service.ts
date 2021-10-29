@@ -48,7 +48,7 @@ export class LocationService {
         private readonly liveGeoLatLongRepository : LiveGeoLatLongRepository,
         private readonly citiesRepository: CitiesRepository) {
 
-
+            
         this.test()
     }
 

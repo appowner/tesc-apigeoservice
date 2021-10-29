@@ -39,4 +39,10 @@ import { RestCallService } from './service/rest-call/rest-call.service';
   controllers: [AppController, TestController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+
+  constructor(){
+    process.env.TZ = 'Asia/Kolkata';
+  }
+
+}
