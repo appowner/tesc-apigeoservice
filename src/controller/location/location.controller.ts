@@ -60,6 +60,9 @@ export class LocationController {
   @Get("/findAddressById")
   // // @UseGuards(JwtAuthGuard)
   async findAddressById(@Req() req: Request, @Query('id') id: number): Promise<ResponseObject<AddressEntity>> {
+    if(id == null){
+      new ResponseObject(new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES), null);
+    }
     let be: BusinessError = new BusinessError(Constants.SUCCESS_CODE, Constants.SUCCESS_RES);
     let ro: ResponseObject<AddressEntity> = new ResponseObject(be, await this.addressService.findById(req, id));
     return ro;
