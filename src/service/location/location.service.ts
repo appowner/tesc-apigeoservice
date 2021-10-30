@@ -704,6 +704,8 @@ export class LocationService {
     
         console.log("trips.startTime"+startDate);
         console.log("trips.endTime"+endDate);
+
+        console.log("query--: "+query);
         let path = await this.geoLatLongRepository.find({where : query})
 
         let body = {
