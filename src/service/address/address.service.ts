@@ -131,26 +131,57 @@ export class AddressService {
         let geofence: GeofenceEntity;
         let poi: PoiEntity;
         console.log(JSON.stringify(newValue));
-        if (newValue.latLong && newValue.latLongId) {
+        if (newValue.latLong) {
             console.log("here--");
-            newValue.latLong.id = newValue.latLongId;
-            latLong = await this.locationService.updateLatlong(req, newValue.latLong);
-            newValue.latLongId = latLong.id;
-            newValue.latLong = latLong;
+            
+            if(newValue.latLongId){
+                newValue.latLong.id = newValue.latLongId;
+                latLong = await this.locationService.updateLatlong(req, newValue.latLong);
+                newValue.latLongId = latLong.id;
+                newValue.latLong = latLong;
+            }
+            else {
+                if (newValue.latLong && newValue.latLong.lat) {
+                    console.log("here");
+                    latLong = await this.locationService.createLatlong(req, newValue.latLong);
+                    newValue.latLongId = latLong.id;
+                    newValue.latLong = latLong;
+                }
+            }
         }
 
-        if (newValue.fence && newValue.fenceId) {
+        if (newValue.fence) {
             console.log("here--1");
-            geofence = await this.locationService.updateGeofence(req, newValue.fence);
-            newValue.fenceId = geofence.id;
-            newValue.fence = geofence;
+            
+            if(newValue.fenceId){
+                geofence = await this.locationService.updateGeofence(req, newValue.fence);
+                newValue.fenceId = geofence.id;
+                newValue.fence = geofence;
+            }
+            else {
+                if (newValue.fence) {
+                    geofence = await this.locationService.createGeofence(req, newValue.fence);
+                    newValue.fenceId = geofence.id;
+                    newValue.fence = geofence;
+                }
+            }
         }
 
-        if (newValue.poi && newValue.poiId) {
+        if (newValue.poi) {
             console.log("here--2");
-            poi = await this.locationService.updatePoi(req, newValue.poi);
-            newValue.poiId = poi.id;
-            newValue.poi = poi;
+           
+            if(newValue.poiId){
+                poi = await this.locationService.updatePoi(req, newValue.poi);
+                newValue.poiId = poi.id;
+                newValue.poi = poi;
+            }
+            else {
+                if (newValue.poi) {
+                    poi = await this.locationService.createPoi(req, newValue.poi);
+                    newValue.poiId = poi.id;
+                    newValue.poi = poi;
+                }
+            }
         }
 
         newValue = await this.addresRepository.save(newValue);
