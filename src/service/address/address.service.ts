@@ -54,6 +54,18 @@ export class AddressService {
 
         return address;
     }
+
+    async findAllAddress(req): Promise<AddressEntity[]> {
+        
+
+        let address = await this.addresRepository.find({order : {id : "ASC"}});
+
+        let list = await this.locationService.getLatlongByIds(req, address.filter(val => val.latLongId != null ).map(val => val.latLongId))
+
+        address.forEach(val => val.latLong = list.find(lst => lst.id == val.latLongId));
+
+        return address;
+    }
     
     async findByIds(req, ids: number[]): Promise<AddressEntity[]> {
 
