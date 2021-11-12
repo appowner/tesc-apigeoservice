@@ -644,13 +644,13 @@ export class LocationService {
 
     public async tripLiveLocation(req: Request, id: number): Promise<LiveGeoLatLongEntity> {
         let trips = await this.restCallService.findTripById(req, id);
-        
+        console.log("TRIPS" + JSON.stringify(trips));
         let driver = await this.restCallService.findDriverById(req, trips.driverId);
 
         let temp = await this.geoTrackingObjectRepository.find({where : { objectType : 'sim', objectValue : driver.contactNumber }});
 
         let live = await this.liveGeoLatLongRepository.findOne({where : {geoTrackingObjectId: In(temp.map(val => val.id))}});
-
+        console.log("live" + JSON.stringify(live));
         live.trip = trips;
 
         return live;
